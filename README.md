@@ -18,9 +18,9 @@ I recommend [the FAQ at Nextstrain](https://nextstrain.org/help/coronavirus/FAQ)
 
   3. parameter estimates from phylogenetic analyses:
 
-    * http://virological.org/t/phylodynamic-analysis-of-sars-cov-2-update-2020-03-06/ 
+  - http://virological.org/t/phylodynamic-analysis-of-sars-cov-2-update-2020-03-06/ 
 
-    * http://virological.org/t/update-2-evolutionary-epidemiological-analysis-of-128-genomes/423
+  - http://virological.org/t/update-2-evolutionary-epidemiological-analysis-of-128-genomes/423
 
   4. A useful set of slides (posted 4 March) https://twitter.com/florian_krammer/status/1235331199805149185 
 

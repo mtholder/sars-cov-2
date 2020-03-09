@@ -11,7 +11,7 @@ regions = {
     'east asia': ['hong kong', 'japan', 'macau', 'mainland china', 'taiwan', 'south korea', ],
     'aust nz':  ['australia', 'new zealand'],
     'middle east':  ['bahrain', 'iran', 'iraq', 'israel', 'jordan', 'kuwait', 'lebanon', 'palestine', 'qatar', 'saudi arabia', 'oman', 'united arab emirates', ],
-    'nafta':  ['canada', 'mexico', 'us',],
+    'north am':  ['canada', 'mexico', 'us',],
     'central am':  ['costa rica', 'dominican republic', 'martinique', 'saint barthelemy', ],
 }
 

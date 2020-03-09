@@ -8,7 +8,7 @@ for (ry in names(confirmed)) {
     country <- gsub("\\.", "-", ry);
     y = confirmed[ry][[1]];
     if (max(y) > 0) {
-      pngfn = paste("plots/confirmed-", country, ".png", sep="") 
+      pngfn = paste("plots/confirmed/confirmed-", country, ".png", sep="") 
       png(pngfn)
       yticks = c(10E0, 10E1, 10E2, 10E3, 10E4, 10E5)
       plot(confirmed$asdate, y,

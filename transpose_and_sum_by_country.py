@@ -14,7 +14,8 @@ def parse_headers(row):
 
 def add_to_column(dl, count_data):
     for d_ind, el in enumerate(count_data):
-        dl[d_ind] += int(el)    
+        dl[d_ind] += int(el)
+
 def parse_input(fn):
     by_country = {}
     with open(fn, 'r', encoding='utf-8') as csvfile:
@@ -33,7 +34,7 @@ def parse_input(fn):
             if ' ship' in prov_name:
                 country = 'cruise ships'
             elif country != 'mainland china':
-                country = 'outside china and ships'
+                other = 'outside china and ships'
             count_data = row[first_data_ind:]
             assert(len(count_data) == num_dates)
             for t in [country, other, 'world']:

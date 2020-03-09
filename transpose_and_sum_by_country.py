@@ -2,6 +2,25 @@
 import sys
 import csv
 
+regions = {
+    'central asia': ['afghanistan', 'armenia', 'azerbaijan', 'bangladesh', 'bhutan', 'georgia', 'india', 'maldives', 'nepal', 'pakistan', 'sri lanka', 'russia',],
+    'africa': ['algeria', 'cameroon', 'egypt', 'morocco', 'nigeria', 'senegal', 'south africa', 'togo', 'tunisia',],
+    'europe': ['andorra', 'austria', 'belarus', 'belgium', 'bosnia and herzegovina', 'bulgaria', 'croatia', 'czech republic', 'denmark', 'estonia', 'faroe islands', 'finland', 'france', 'germany', 'gibraltar', 'greece', 'hungary', 'iceland', 'ireland', 'italy', 'latvia', 'liechtenstein', 'lithuania', 'luxembourg', 'malta', 'moldova', 'monaco', 'netherlands', 'north macedonia', 'norway', 'poland', 'portugal', 'republic of ireland', 'romania', 'san marino', 'serbia', 'slovakia', 'slovenia', 'spain', 'sweden', 'switzerland', 'uk', 'ukraine', 'vatican city', ],
+    'south am': ['argentina', 'brazil', 'chile', 'colombia', 'ecuador', 'french guiana', 'paraguay', 'peru' ],
+    'se asia': ['cambodia', 'indonesia', 'malaysia', 'philippines', 'thailand', 'vietnam', 'singapore'],
+    'east asia': ['hong kong', 'japan', 'macau', 'mainland china', 'taiwan', 'south korea', ],
+    'aust nz':  ['australia', 'new zealand'],
+    'middle east':  ['bahrain', 'iran', 'iraq', 'israel', 'jordan', 'kuwait', 'lebanon', 'palestine', 'qatar', 'saudi arabia', 'oman', 'united arab emirates', ],
+    'nafta':  ['canada', 'mexico', 'us',],
+    'central am':  ['costa rica', 'dominican republic', 'martinique', 'saint barthelemy', ],
+}
+
+def country_to_region(country):
+    for region, country_list in regions.items():
+        if country in country_list:
+            return region
+    raise NotImplementedError(country)
+
 def parse_headers(row):
     dates = []
     first_date_ind = 4
@@ -28,16 +47,22 @@ def parse_input(fn):
                 num_dates = len(dates)
                 continue
             raw_country = row[country_ind]
+            tag_list = ['world', ]
             country = raw_country.lower().strip()
             prov_name = row[name_ind].lower()
             other = None
             if ' ship' in prov_name:
                 country = 'cruise ships'
-            elif country != 'mainland china':
-                other = 'outside china and ships'
+            else:
+                region = country_to_region(country)
+                if region:
+                    tag_list.append(region)
+                if country != 'mainland china':
+                    tag_list.append('outside china and ships')
+            tag_list.append(country)
             count_data = row[first_data_ind:]
             assert(len(count_data) == num_dates)
-            for t in [country, other, 'world']:
+            for t in tag_list:
                 if t is None:
                     continue
                 dl = by_country.setdefault(t, [0]*num_dates)

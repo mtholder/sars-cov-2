@@ -12,3 +12,8 @@ else
         git clone https://github.com/CSSEGISandData/COVID-19.git
     fi
 fi
+
+datadir="COVID-19/csse_covid_19_data/csse_covid_19_time_series"
+fn="${datadir}/time_series_19-covid-Confirmed.csv"
+python3 transpose_and_sum_by_country.py "${fn}" || exit
+Rscript refresh-plots.R || exit

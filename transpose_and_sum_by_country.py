@@ -95,9 +95,12 @@ def dump_csv(fn, key_order, data_dict, num_data_rows):
                 curr_row.append(col[i])
             writer.writerow(curr_row)
 
-def _write_index_conf_row(outp, x, fmt):
-    mog_x = fmt.format('-'.join(x.split(' ')))
-    outp.write('<tr><td>{}</td><td><img src="{}" alt="{}"/></td></tr>\n'.format(x, mog_x, x))
+def _write_index_conf_row(outp, x, fmt_list):
+    outp.write('<tr><td>{}</td>'.format(x))
+    for fmt in fmt_list:
+        mog_x = fmt.format('-'.join(x.split(' ')))
+        outp.write('<td><img src="{}" alt="{}"/></td>'.format(mog_x, x))
+    outp.write('</tr>\n')
 
 def write_index(keys, extra_locs, fn, fmt):
     print(keys)
@@ -127,4 +130,5 @@ if __name__ == '__main__':
     out_keys.insert(0, 'date')
     by_country['date'] = dates
     dump_csv('{}.csv'.format(tag), out_keys, by_country, len(dates))
-    write_index(bef_date, extra_locs, 'plots/index.html', 'confirmed/confirmed-{}.png')
+    fmt_list = ['{}/{}'.format(i, i) + '-{}.png' for i in ['confirmed', 'newcases']]
+    write_index(bef_date, extra_locs, 'plots/index.html', fmt_list)

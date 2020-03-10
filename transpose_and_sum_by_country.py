@@ -5,21 +5,22 @@ import csv
 regions = {
     'central asia': ['afghanistan', 'armenia', 'azerbaijan', 'bangladesh', 'bhutan', 'georgia', 'india', 'maldives', 'nepal', 'pakistan', 'sri lanka', 'russia',],
     'africa': ['algeria', 'cameroon', 'egypt', 'morocco', 'nigeria', 'senegal', 'south africa', 'togo', 'tunisia',],
-    'europe': ['andorra', 'austria', 'belarus', 'belgium', 'bosnia and herzegovina', 'bulgaria', 'croatia', 'czech republic', 'denmark', 'estonia', 'faroe islands', 'finland', 'france', 'germany', 'gibraltar', 'greece', 'hungary', 'iceland', 'ireland', 'italy', 'latvia', 'liechtenstein', 'lithuania', 'luxembourg', 'malta', 'moldova', 'monaco', 'netherlands', 'north macedonia', 'norway', 'poland', 'portugal', 'republic of ireland', 'romania', 'san marino', 'serbia', 'slovakia', 'slovenia', 'spain', 'sweden', 'switzerland', 'uk', 'ukraine', 'vatican city', ],
+    'europe': ['albania', 'andorra', 'austria', 'belarus', 'belgium', 'bosnia and herzegovina', 'bulgaria', 
+               'croatia', 'cyprus', 'czech republic', 'denmark', 'estonia', 'faroe islands', 'finland', 'france', 'germany', 'gibraltar', 'greece', 'hungary', 'iceland', 'ireland', 'italy', 'latvia', 'liechtenstein', 'lithuania', 'luxembourg', 'malta', 'moldova', 'monaco', 'netherlands', 'north macedonia', 'norway', 'poland', 'portugal', 'republic of ireland', 'romania', 'san marino', 'serbia', 'slovakia', 'slovenia', 'spain', 'sweden', 'switzerland', 'uk', 'ukraine', 'vatican city', ],
     'south am': ['argentina', 'brazil', 'chile', 'colombia', 'ecuador', 'french guiana', 'paraguay', 'peru' ],
-    'se asia': ['cambodia', 'indonesia', 'malaysia', 'philippines', 'thailand', 'vietnam', 'singapore'],
+    'se asia': ['brunei', 'cambodia', 'indonesia', 'malaysia', 'philippines', 'thailand', 'vietnam', 'singapore'],
     'east asia': ['hong kong', 'japan', 'macau', 'mainland china', 'taiwan', 'south korea', ],
     'aust nz':  ['australia', 'new zealand'],
     'middle east':  ['bahrain', 'iran', 'iraq', 'israel', 'jordan', 'kuwait', 'lebanon', 'palestine', 'qatar', 'saudi arabia', 'oman', 'united arab emirates', ],
     'north am':  ['canada', 'mexico', 'us',],
-    'central am':  ['costa rica', 'dominican republic', 'martinique', 'saint barthelemy', ],
+    'central am':  ['costa rica', 'dominican republic', 'martinique', 'saint barthelemy', 'st. martin'],
 }
 
 def country_to_region(country):
     for region, country_list in regions.items():
         if country in country_list:
             return region
-    raise NotImplementedError(country)
+    raise NotImplementedError('Need to add a "{}" to a region!'.format(country))
 
 def parse_headers(row):
     dates = []
@@ -37,6 +38,8 @@ def add_to_column(dl, count_data):
 
 def parse_input(fn):
     by_country = {}
+    meta = set(['world'])
+    region_of_china = country_to_region('mainland china')
     with open(fn, 'r', encoding='utf-8') as csvfile:
         rdr = csv.reader(csvfile, delimiter=',')
         country_ind = None
@@ -58,7 +61,14 @@ def parse_input(fn):
                 if region:
                     tag_list.append(region)
                 if country != 'mainland china':
-                    tag_list.append('outside china and ships')
+                    if region and region == region_of_china:
+                        rstr = '{} without china'.format(region)
+                        meta.add(rstr)
+                        tag_list.append(rstr)
+                    
+                    wochina = 'outside china and ships'
+                    tag_list.append(wochina)
+                    meta.add(wochina)
             tag_list.append(country)
             count_data = row[first_data_ind:]
             assert(len(count_data) == num_dates)
@@ -68,7 +78,7 @@ def parse_input(fn):
                 dl = by_country.setdefault(t, [0]*num_dates)
                 add_to_column(dl, count_data)
 
-    return dates, by_country
+    return dates, by_country, meta
 
 def dump_csv(fn, key_order, data_dict, num_data_rows):
     with open(fn, 'w', encoding='utf-8') as csvfile:
@@ -81,12 +91,36 @@ def dump_csv(fn, key_order, data_dict, num_data_rows):
                 curr_row.append(col[i])
             writer.writerow(curr_row)
 
+def _write_index_conf_row(outp, x, fmt):
+    mog_x = fmt.format('-'.join(x.split(' ')))
+    outp.write('<tr><td>{}</td><td><img src="{}" alt="{}"/></td></tr>\n'.format(x, mog_x, x))
+
+def write_index(keys, extra_locs, fn, fmt):
+    print(keys)
+    print(extra_locs)
+    with open(fn, 'w', encoding='utf-8') as outp:
+        outp.write('<html>\n<head>\n<title>confirmed cases</title>\n</head>\n<body>\n')
+        outp.write('<table>')
+        for x in extra_locs:
+            _write_index_conf_row(outp, x, fmt)
+        for reg_keys in regions.keys():
+            _write_index_conf_row(outp, reg_keys, fmt)
+        rk = list(regions.keys())
+        rk.sort()
+        for k in rk:
+            countries = regions[k]
+            for c in countries:
+                _write_index_conf_row(outp, c, fmt)
+        outp.write('</table>\n')
+        outp.write('</body>\n</html>\n')
 
 if __name__ == '__main__':
     tag = 'confirmed'
-    dates, by_country = parse_input(sys.argv[1])
+    dates, by_country, extra_locs = parse_input(sys.argv[1])
     out_keys = list(by_country.keys())
     out_keys.sort()
+    bef_date = list(out_keys)
     out_keys.insert(0, 'date')
     by_country['date'] = dates
     dump_csv('{}.csv'.format(tag), out_keys, by_country, len(dates))
+    write_index(bef_date, extra_locs, 'plots/index.html', 'confirmed/confirmed-{}.png')

@@ -61,11 +61,15 @@ def parse_input(fn):
                 if region:
                     tag_list.append(region)
                 if country != 'mainland china':
-                    if region and region == region_of_china:
-                        rstr = '{} without china'.format(region)
-                        meta.add(rstr)
-                        tag_list.append(rstr)
-                    
+                    if region:
+                        if region == region_of_china:
+                            rstr = '{} without china'.format(region)
+                            meta.add(rstr)
+                            tag_list.append(rstr)
+                        else:
+                            rstr = 'world without {}'.format(region_of_china)
+                            meta.add(rstr)
+                            tag_list.append(rstr)
                     wochina = 'outside china and ships'
                     tag_list.append(wochina)
                     meta.add(wochina)

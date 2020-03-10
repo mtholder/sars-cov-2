@@ -4,6 +4,7 @@ calc.new.cases <- function(y) {
   new_cases = curr - prev;
   return(new_cases);
 }
+
 upper.plot.limit <- function(v) {
   # Returns v rounded up at the second most significant digit (base 10)
   z = v - 10**(floor(log10(v)));
@@ -53,7 +54,10 @@ for (ry in names(confirmed)) {
       nc = calc.new.cases(y)
       barplot(nc, ylab="# new cases", xlab="", main=country, names.arg=lagx, las=3)
       dev.off()
+      if (min(nc) < 0) {
+        print(paste("negative new case counts in ", country))
       }
+    }
   } 
 }
 

@@ -95,29 +95,29 @@ def dump_csv(fn, key_order, data_dict, num_data_rows):
                 curr_row.append(col[i])
             writer.writerow(curr_row)
 
-def _write_index_conf_row(outp, x, fmt_list):
-    outp.write('<tr><td>{}</td>'.format(x))
+def _write_index_conf_row(outp, x, by_country, fmt_list):
+    outp.write('<tr><td>{} ({:,})</td>'.format(x, by_country.get(x, [0])[-1]))
     for fmt in fmt_list:
         mog_x = fmt.format('-'.join(x.split(' ')))
         outp.write('<td><img src="{}" alt="{}"/></td>'.format(mog_x, x))
     outp.write('</tr>\n')
 
-def write_index(keys, extra_locs, fn, fmt):
+def write_index(keys, extra_locs, by_country, fn, fmt):
     print(keys)
     print(extra_locs)
     with open(fn, 'w', encoding='utf-8') as outp:
         outp.write('<html>\n<head>\n<title>confirmed cases</title>\n</head>\n<body>\n')
         outp.write('<table>')
         for x in extra_locs:
-            _write_index_conf_row(outp, x, fmt)
+            _write_index_conf_row(outp, x, by_country, fmt)
         for reg_keys in regions.keys():
-            _write_index_conf_row(outp, reg_keys, fmt)
+            _write_index_conf_row(outp, reg_keys, by_country, fmt)
         rk = list(regions.keys())
         rk.sort()
         for k in rk:
             countries = regions[k]
             for c in countries:
-                _write_index_conf_row(outp, c, fmt)
+                _write_index_conf_row(outp, c, by_country, fmt)
         outp.write('</table>\n')
         outp.write('</body>\n</html>\n')
 
@@ -131,4 +131,4 @@ if __name__ == '__main__':
     by_country['date'] = dates
     dump_csv('{}.csv'.format(tag), out_keys, by_country, len(dates))
     fmt_list = ['{}/{}'.format(i, i) + '-{}.png' for i in ['confirmed', 'newcases']]
-    write_index(bef_date, extra_locs, 'plots/index.html', fmt_list)
+    write_index(bef_date, extra_locs, by_country, 'plots/index.html', fmt_list)

@@ -146,6 +146,10 @@ def accum_by_country(raw_by_country):
         #     print('  ', k)
         #     print('  ', v)
         bc[country] = sum_lists(list(prov_dict.values()))
+    upd  = raw_by_country['us']
+    # for k, v in upd.items():
+    #     print('us {} {}'.format(k, v))
+    # print('us sum {}'.format(bc['us']))
     return bc
 
 def accum_regions(by_country):
@@ -204,14 +208,15 @@ def parse_daily_rep(fp, num_prev, confirmed, dead, recovered):
                 new_datum_str = row[stat_ind]
                 new_datum = int(new_datum_str) if new_datum_str else 0
                 count_list.append(new_datum)
-                # print('added {} to {} for {} {}'.format(new_datum_str, count_list, country, prov))
+                #if country == 'us':
+                #    print('added {} to {} for {} {}'.format(new_datum_str, count_list, country, prov))
         ndl = num_prev + 1
         for x in ind_dest_list:
             stat_dest = x[1]
             for by_prov in stat_dest.values():
                 for count_by_prov in by_prov.values():
                     if len(count_by_prov) < ndl:
-                        count_by_prov.append(ndl)
+                        count_by_prov.append(0)
                         assert len(count_by_prov) == ndl
 
 def parse_daily_rep_input(daily_rep_dir, confirmed, dead, recovered):

@@ -2,6 +2,8 @@
 import sys
 import csv
 import re
+import os
+
 aliases = {'iran (islamic republic of)': 'iran',
            'holy see': 'vatican city',
            'republic of ireland': 'ireland',
@@ -123,27 +125,28 @@ def normalize_us(raw_by_country):
             by_higher_group_or_summed.append((k, sum_lists([v, sfl])))
         else:
             by_higher_group_or_summed.append((k, v))
-        print(by_higher_group_or_summed[-1] )
+        # print(by_higher_group_or_summed[-1] )
     raw_by_country['us'] = by_higher_group_or_summed
 
 
 def sum_lists(list_of_lists):
-    summed = list(list_of_lists[0])
-    for cts in list_of_lists[1:]:
-        # print(summed, cts)
+    loli = iter(list_of_lists)
+    summed = list(next(loli))
+    for cts in loli:
+        # print('summing', summed, 'len=', len(summed), 'and', cts, 'len=', len(cts))
         for n, el in enumerate(cts):
             summed[n] += el
     return summed
 
 def accum_by_country(raw_by_country):
-    normalize_us(raw_by_country)
-    by_country = {}
-    for country, loc_list in raw_by_country.items():
-        summed = sum_lists([i[1] for i in loc_list])
-        by_country[country] = summed
-    for k, v in by_country.items():
-        print(k, v)
-    return by_country
+    bc = {}
+    for country, prov_dict in raw_by_country.items():
+        # print(country, prov_dict)
+        # for k, v in prov_dict.items():
+        #     print('  ', k)
+        #     print('  ', v)
+        bc[country] = sum_lists(list(prov_dict.values()))
+    return bc
 
 def accum_regions(by_country):
     #['central asia', 'africa', 'europe', 'south am', 'se asia', 'east asia without china', 'mainland china', 'aust nz',
@@ -172,8 +175,77 @@ def accum_by_country_and_region(raw_by_country):
     by_country = accum_by_country(raw_by_country)
     return accum_regions(by_country)
 
+def parse_daily_rep(fp, num_prev, confirmed, dead, recovered):
+    country_ind = 1
+    prov_ind = 0
+    conf_ind, dead_ind, rec_ind = 3, 4, 5
+    ind_dest_list = [(conf_ind, confirmed), (dead_ind, dead), (rec_ind, recovered)]
+    with open(fp, 'r', encoding='utf-8') as csvfile:
+        ship_ind = 0
+        rdr = csv.reader(csvfile, delimiter=',')
+        rit = iter(rdr)
+        header = next(rit)
+        assert header[prov_ind].endswith('Province/State')
+        assert header[country_ind] == 'Country/Region'
+        assert header[2] == 'Last Update'
+        assert header[conf_ind] == 'Confirmed'
+        assert header[dead_ind] == 'Deaths'
+        assert header[rec_ind] == 'Recovered'
+        for row in rit:
+            country, prov, ship_ind = _proc_country_str(row[country_ind], row[prov_ind], ship_ind)
+            for stat_ind, stat_dest in ind_dest_list:
+                by_prov = stat_dest.setdefault(country, {})
+                count_list = by_prov.setdefault(prov, [0]*num_prev)
+                # print(fp, country, prov, stat_ind, num_prev, len(count_list), count_list)
+                if len(count_list) != num_prev:
+                    if fp.endswith('03-08-2020.csv') and country == 'ireland':
+                        continue
+                    assert len(count_list) == num_prev
+                new_datum_str = row[stat_ind]
+                new_datum = int(new_datum_str) if new_datum_str else 0
+                count_list.append(new_datum)
+                # print('added {} to {} for {} {}'.format(new_datum_str, count_list, country, prov))
+        ndl = num_prev + 1
+        for x in ind_dest_list:
+            stat_dest = x[1]
+            for by_prov in stat_dest.values():
+                for count_by_prov in by_prov.values():
+                    if len(count_by_prov) < ndl:
+                        count_by_prov.append(ndl)
+                        assert len(count_by_prov) == ndl
+
+def parse_daily_rep_input(daily_rep_dir, confirmed, dead, recovered):
+    sub = os.listdir(daily_rep_dir)
+    dates = []
+    num_prev = 0
+    for month in range(1, 13):
+        m_str = '{:02}'.format(month)
+        for day in range(1, 31):
+            d_str = '{:02}'.format(day)
+            fn_str = '{}-{}-2020.csv'.format(m_str, d_str)
+            if fn_str in sub:
+                dates.append('{}/{}/20'.format(month, day))
+                fp = os.path.join(daily_rep_dir, fn_str)
+                parse_daily_rep(fp, num_prev, confirmed, dead, recovered)
+                # print(fn_str, confirmed)
+                num_prev += 1
+    return dates
+
+def _proc_country_str(raw_country, raw_prov, ship_ind):
+    country = raw_country.lower().strip()
+    if country in aliases:
+        country = aliases[country]
+    prov_name = raw_prov.lower()
+    if ' ship' in prov_name or ' princess' in prov_name:
+        country = 'cruise ships'
+        ship_ind += 1
+        prov_name = '{}record{}'.format(prov_name, ship_ind)
+
+    return country, prov_name, ship_ind
+
 def parse_input(fn):
     by_country = {}
+    ship_ind = 0
     with open(fn, 'r', encoding='utf-8') as csvfile:
         rdr = csv.reader(csvfile, delimiter=',')
         country_ind = None
@@ -183,13 +255,7 @@ def parse_input(fn):
                 name_ind, country_ind, first_data_ind, dates = blob
                 num_dates = len(dates)
                 continue
-            raw_country = row[country_ind]
-            country = raw_country.lower().strip()
-            if country in aliases:
-                country = aliases[country]
-            prov_name = row[name_ind].lower()
-            if ' ship' in prov_name or ' princess' in prov_name:
-                country = 'cruise ships'
+            country, prov_name, ship_ind = _proc_country_str(row[country_ind], row[0], ship_ind)
             count_data = [0 if not i else int(i) for i in row[first_data_ind:]]
             assert (len(count_data) == num_dates)
             by_country.setdefault(country, []).append((prov_name, count_data))
@@ -254,10 +320,14 @@ def write_index(keys, meta, by_country, fn, fmt):
         outp.write('</table>\n')
         outp.write('</body>\n</html>\n')
 
-def main(fp):
+def main(covid_dir):
     tag = 'confirmed'
-    dates, raw_by_country = parse_input(fp)
-    by_country, groupings = accum_by_country_and_region(raw_by_country)
+    # '/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv'
+    # dates, raw_by_country = parse_input(fp)
+    daily_rep_dir = os.path.join(covid_dir, 'csse_covid_19_data', 'csse_covid_19_daily_reports')
+    confirmed, dead, recovered = {}, {}, {}
+    dates = parse_daily_rep_input(daily_rep_dir, confirmed, dead, recovered)
+    by_country, groupings = accum_by_country_and_region(confirmed)
     out_keys = list(by_country.keys())
     out_keys.sort()
     bef_date = list(out_keys)
@@ -269,4 +339,4 @@ def main(fp):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1])
+    main('COVID-19')

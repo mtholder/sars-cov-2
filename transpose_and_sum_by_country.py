@@ -2,18 +2,35 @@
 import sys
 import csv
 
+aliases = {'iran (islamic republic of)': 'iran',
+            'holy see': 'vatican city',
+            'republic of ireland': 'ireland',
+            'republic of moldova': 'moldova',
+            'republic of korea': 'south korea',
+            'hong kong sar': 'hong kong',
+            'taipei and environs': 'taiwan',
+            'viet nam': 'vietnam',
+            'occupied palestinian territory': 'palestine',
+            'macao sar': 'macau',
+            'russian federation': 'russia',
+            'saint martin': 'st. martin',
+            }
+
 regions = {
     'central asia': ['afghanistan', 'armenia', 'azerbaijan', 'bangladesh', 'bhutan', 'georgia', 'india', 'maldives', 'nepal', 'pakistan', 'sri lanka', 'russia',],
-    'africa': ['algeria', 'cameroon', 'egypt', 'morocco', 'nigeria', 'senegal', 'south africa', 'togo', 'tunisia',],
+    'africa': ['algeria', 'burkina faso', 'cameroon', 'egypt', 'morocco', 'nigeria', 'senegal', 'south africa', 'togo', 'tunisia',],
     'europe': ['albania', 'andorra', 'austria', 'belarus', 'belgium', 'bosnia and herzegovina', 'bulgaria', 
-               'croatia', 'cyprus', 'czech republic', 'denmark', 'estonia', 'faroe islands', 'finland', 'france', 'germany', 'gibraltar', 'greece', 'hungary', 'iceland', 'ireland', 'italy', 'latvia', 'liechtenstein', 'lithuania', 'luxembourg', 'malta', 'moldova', 'monaco', 'netherlands', 'north macedonia', 'norway', 'poland', 'portugal', 'republic of ireland', 'romania', 'san marino', 'serbia', 'slovakia', 'slovenia', 'spain', 'sweden', 'switzerland', 'uk', 'ukraine', 'vatican city', ],
+               'channel islands', 'croatia', 'cyprus', 'czech republic',
+               'denmark', 'estonia', 'faroe islands', 'finland', 'france',
+               'germany', 'gibraltar', 'greece', 'hungary',
+               'iceland', 'ireland', 'italy', 'latvia', 'liechtenstein', 'lithuania', 'luxembourg', 'malta', 'moldova', 'monaco', 'netherlands', 'north macedonia', 'norway', 'poland', 'portugal', 'republic of ireland', 'romania', 'san marino', 'serbia', 'slovakia', 'slovenia', 'spain', 'sweden', 'switzerland', 'uk', 'ukraine', 'vatican city', ],
     'south am': ['argentina', 'brazil', 'chile', 'colombia', 'ecuador', 'french guiana', 'paraguay', 'peru' ],
     'se asia': ['brunei', 'cambodia', 'indonesia', 'malaysia', 'philippines', 'thailand', 'vietnam', 'singapore'],
-    'east asia': ['hong kong', 'japan', 'macau', 'mainland china', 'taiwan', 'south korea', ],
+    'east asia': ['hong kong', 'japan', 'macau', 'mainland china', 'mongolia', 'taiwan', 'south korea', ],
     'aust nz':  ['australia', 'new zealand'],
     'middle east':  ['bahrain', 'iran', 'iraq', 'israel', 'jordan', 'kuwait', 'lebanon', 'palestine', 'qatar', 'saudi arabia', 'oman', 'united arab emirates', ],
     'north am':  ['canada', 'mexico', 'us',],
-    'central am':  ['costa rica', 'dominican republic', 'martinique', 'saint barthelemy', 'st. martin'],
+    'central am':  ['costa rica', 'dominican republic', 'panama', 'martinique', 'saint barthelemy', 'st. martin'],
 }
 
 def country_to_region(country):
@@ -34,7 +51,8 @@ def parse_headers(row):
 
 def add_to_column(dl, count_data):
     for d_ind, el in enumerate(count_data):
-        dl[d_ind] += int(el)
+        if el:
+            dl[d_ind] += int(el)
 
 def parse_input(fn):
     by_country = {}
@@ -52,6 +70,8 @@ def parse_input(fn):
             raw_country = row[country_ind]
             tag_list = ['world', ]
             country = raw_country.lower().strip()
+            if country in aliases:
+                country = aliases[country]
             prov_name = row[name_ind].lower()
             other = None
             if ' ship' in prov_name:

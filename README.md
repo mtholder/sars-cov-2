@@ -25,3 +25,5 @@ I recommend [the FAQ at Nextstrain](https://nextstrain.org/help/coronavirus/FAQ)
   4. A useful set of slides (posted 4 March) https://twitter.com/florian_krammer/status/1235331199805149185 
 
   5. Johns Hopkins [dashboard](https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6) and [GitHub repo for data](https://github.com/CSSEGISandData/COVID-19)
+
+  6. [preprint on when during an infection patients transmit](https://www.medrxiv.org/content/10.1101/2020.03.05.20030502v1)

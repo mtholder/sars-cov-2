@@ -7,9 +7,11 @@ Please pay attention to experts for advice.
 This repository is just meant as a container for some of the statistics
 that I have been looking at, **not** as tool for generating policy or advice.
 
-I recommend [the FAQ at Nextstrain](https://nextstrain.org/help/coronavirus/FAQ) for general questions.
+I recommend [the FAQ at Nextstrain](https://nextstrain.org/help/coronavirus/FAQ) for general questions and
+this [interview with Dr. Marc Lipsitch](https://www.spiegel.de/international/world/i-don-t-think-the-virus-can-be-stopped-anymore-a-03d404e6-762b-42fb-ac48-e4a8f03a2f2b?fbclid=IwAR2u8oBdag7U3PhyuIOg6ADuVIBpTV6XIPWEiY5g5j8-azEZG3Y4oEnd-a8)
+for a high level summary.
 
-# Links
+# Some links
 
   1. https://nextstrain.org/narratives/ncov/sit-rep/ Situation Report
 

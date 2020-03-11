@@ -103,15 +103,29 @@ def normalize_us(raw_by_country):
             highest_group.append((loc, counts))
     ss = list(states_seen)
     ss.sort()
-    dv = ['"": "{}",'.format(i) for i in ss ]
+    summed_from_locals = {}
     for loc, counts in us_locs:
         m = _US_LOC_PAT.match(loc)
         if m:
             st_code = m.group(2)
             state_name = _STATE_CODE_TO_NAME[st_code]
             if state_name not in states_seen:
+
                 highest_group.append((loc, counts))
-    raw_by_country['us'] = highest_group
+            if state_name in summed_from_locals:
+                summed_from_locals[state_name] = sum_lists([counts, summed_from_locals[state_name]])
+            else:
+                summed_from_locals[state_name] = list(counts)
+    by_higher_group_or_summed = []
+    for k, v in highest_group:
+        if k in summed_from_locals:
+            sfl = summed_from_locals[k]
+            by_higher_group_or_summed.append((k, sum_lists([v, sfl])))
+        else:
+            by_higher_group_or_summed.append((k, v))
+        print(by_higher_group_or_summed[-1] )
+    raw_by_country['us'] = by_higher_group_or_summed
+
 
 def sum_lists(list_of_lists):
     summed = list(list_of_lists[0])
@@ -127,8 +141,8 @@ def accum_by_country(raw_by_country):
     for country, loc_list in raw_by_country.items():
         summed = sum_lists([i[1] for i in loc_list])
         by_country[country] = summed
-    # for k, v in by_country.items():
-    #     print(k, v)
+    for k, v in by_country.items():
+        print(k, v)
     return by_country
 
 def accum_regions(by_country):

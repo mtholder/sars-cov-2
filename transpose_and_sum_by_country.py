@@ -312,7 +312,7 @@ def _write_index_conf_row(outp, x, by_country, fmt_list):
     c = by_country['confirmed'].get(x, [0])[-1]
     d = by_country['dead'].get(x, [0])[-1]
     r = by_country['recovered'].get(x, [0])[-1]
-    outp.write('<tr><td>{} ({:,} / {:,} / {:,} )</td>'.format(x, c, d, r))
+    outp.write('<tr><td><div align="right"> {}<br />cases: {:7,}<br />deaths: {:7,}<br />recovered: {:7,}<br />active {:7,}</div></td>'.format(x, c, d, r, c-d-r))
     for fmt in fmt_list:
         mog_x = fmt.format('-'.join(x.split(' ')))
         outp.write('<td><img src="{}" alt="{}"/></td>'.format(mog_x, x))
@@ -351,7 +351,13 @@ def _rec_table_rows(outp, top_group, meta, by_country, fmt):
 def write_index(keys, meta, by_country, fn, fmt):
     with open(fn, 'w', encoding='utf-8') as outp:
         outp.write('<html>\n<head>\n<title>confirmed cases</title>\n</head>\n<body>\n')
-        outp.write('<table>')
+        outp.write('<table>\n')
+        outp.write('<th><td><div align="center">cases in black solid<br />'
+                    'active in black dashed<br/>'
+                    '<font color="blue">recovered in blue</font><br />'
+                    '<font color="red">deaths in red</font></div>'
+                    '</td><td><div align="center">New cases per day</div></td></th>\n')
+
         top_group = meta.pop(0)
         _rec_table_rows(outp, top_group, meta, by_country, fmt)
         outp.write('</table>\n')

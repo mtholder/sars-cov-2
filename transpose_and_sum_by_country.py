@@ -272,6 +272,8 @@ def _proc_country_str(raw_country, raw_prov, ship_ind):
         country = 'cruise ships'
         ship_ind += 1
         prov_name = '{}record{}'.format(prov_name, ship_ind)
+    if prov_name in ['hong kong', 'macau']:
+        country = prov_name
 
     return country, prov_name, ship_ind
 
@@ -353,19 +355,20 @@ def write_index(keys, meta, by_country, fn, fmt):
         outp.write('</body>\n</html>\n')
 
 def main(covid_dir):
-    tag = 'confirmed'
+
     # '/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv'
     # dates, raw_by_country = parse_input(fp)
     daily_rep_dir = os.path.join(covid_dir, 'csse_covid_19_data', 'csse_covid_19_daily_reports')
     confirmed, dead, recovered = {}, {}, {}
     dates = parse_daily_rep_input(daily_rep_dir, confirmed, dead, recovered)
-    by_country, groupings = accum_by_country_and_region(confirmed)
-    out_keys = list(by_country.keys())
-    out_keys.sort()
-    bef_date = list(out_keys)
-    out_keys.insert(0, 'date')
-    by_country['date'] = dates
-    dump_csv('{}.csv'.format(tag), out_keys, by_country, len(dates))
+    for coll, tag in [(confirmed, 'confirmed'), (dead, 'dead'), (recovered, 'recovered')]:
+        by_country, groupings = accum_by_country_and_region(confirmed)
+        out_keys = list(by_country.keys())
+        out_keys.sort()
+        bef_date = list(out_keys)
+        out_keys.insert(0, 'date')
+        by_country['date'] = dates
+        dump_csv('{}.csv'.format(tag), out_keys, by_country, len(dates))
     fmt_list = ['{}/{}'.format(i, i) + '-{}.png' for i in ['confirmed', 'newcases']]
     write_index(bef_date, groupings, by_country, 'plots/index.html', fmt_list)
 

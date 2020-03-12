@@ -309,7 +309,10 @@ def dump_csv(fn, key_order, data_dict, num_data_rows):
 
 
 def _write_index_conf_row(outp, x, by_country, fmt_list):
-    outp.write('<tr><td>{} ({:,})</td>'.format(x, by_country.get(x, [0])[-1]))
+    c = by_country['confirmed'].get(x, [0])[-1]
+    d = by_country['dead'].get(x, [0])[-1]
+    r = by_country['recovered'].get(x, [0])[-1]
+    outp.write('<tr><td>{} ({:,} / {:,} / {:,} )</td>'.format(x, c, d, r))
     for fmt in fmt_list:
         mog_x = fmt.format('-'.join(x.split(' ')))
         outp.write('<td><img src="{}" alt="{}"/></td>'.format(mog_x, x))
@@ -361,16 +364,18 @@ def main(covid_dir):
     daily_rep_dir = os.path.join(covid_dir, 'csse_covid_19_data', 'csse_covid_19_daily_reports')
     confirmed, dead, recovered = {}, {}, {}
     dates = parse_daily_rep_input(daily_rep_dir, confirmed, dead, recovered)
+    bdt = {}
     for coll, tag in [(confirmed, 'confirmed'), (dead, 'dead'), (recovered, 'recovered')]:
-        by_country, groupings = accum_by_country_and_region(confirmed)
+        by_country, groupings = accum_by_country_and_region(coll)
         out_keys = list(by_country.keys())
         out_keys.sort()
         bef_date = list(out_keys)
         out_keys.insert(0, 'date')
         by_country['date'] = dates
         dump_csv('{}.csv'.format(tag), out_keys, by_country, len(dates))
+        bdt[tag] = by_country
     fmt_list = ['{}/{}'.format(i, i) + '-{}.png' for i in ['confirmed', 'newcases']]
-    write_index(bef_date, groupings, by_country, 'plots/index.html', fmt_list)
+    write_index(bef_date, groupings, bdt, 'plots/index.html', fmt_list)
 
 
 if __name__ == '__main__':

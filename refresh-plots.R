@@ -12,6 +12,8 @@ upper.plot.limit <- function(v) {
 }
 
 confirmed <- read.csv("confirmed.csv", strip.white=TRUE)
+dead <- read.csv("dead.csv", strip.white=TRUE)
+recovered <- read.csv("recovered.csv", strip.white=TRUE)
 confirmed$asdate = as.Date(confirmed$date, format="%m/%d/%Y")
 x = confirmed$asdate
 lx = length(x)
@@ -36,10 +38,15 @@ for (ry in names(confirmed)) {
       pngfn = paste("plots/confirmed/confirmed-", country, ".png", sep="") 
       png(pngfn)
       yticks = c(10E0, 10E1, 10E2, 10E3, 10E4, 10E5)
+      dy = dead[ry][[1]];
+      recy = recovered[ry][[1]];
       plot(confirmed$asdate, y,
            log="y", type='l', 
            ylim=c(1, 10E6),
            axes=FALSE, ylab="# confirmed cases", xlab="date", main=country)
+      lines(confirmed$asdate, dy, col="red")
+      lines(confirmed$asdate, recy, col="blue")
+      lines(confirmed$asdate, y - dy - recy, lty=2)
       axis(side=2, at=yticks, labels=yticks)
       axis(side=1, at=xticks, labels=xticks)
       box()

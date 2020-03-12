@@ -16,33 +16,46 @@ aliases = {'iran (islamic republic of)': 'iran',
            'macao sar': 'macau',
            'russian federation': 'russia',
            'saint martin': 'st. martin',
+           'china': 'mainland china',
+           'korea, south': 'south korea',
+           'united kingdom': 'uk',
+           'czechia': 'czech republic',
+           'taiwan*': 'taiwan',
+           'congo (kinshasa)': 'congo',
+           "cote d'ivoire": 'ivory coast'
            }
 
 regions = {
     'central asia': ['afghanistan', 'armenia', 'azerbaijan', 'bangladesh', 'bhutan', 'georgia', 'india', 'maldives',
                      'nepal', 'pakistan', 'sri lanka', 'russia', ],
-    'africa': ['algeria', 'burkina faso', 'cameroon', 'egypt', 'morocco', 'nigeria', 'senegal', 'south africa', 'togo',
+    'africa': ['algeria', 'burkina faso', 'cameroon', 'congo', 'egypt',
+               'ivory coast', 'morocco', 'nigeria',
+               'reunion', 'senegal', 'south africa', 'togo',
                'tunisia', ],
     'europe': ['albania', 'andorra', 'austria', 'belarus', 'belgium', 'bosnia and herzegovina', 'bulgaria',
                'channel islands', 'croatia', 'cyprus', 'czech republic',
                'denmark', 'estonia', 'faroe islands', 'finland', 'france',
                'germany', 'gibraltar', 'greece', 'hungary',
                'iceland', 'ireland', 'italy', 'latvia', 'liechtenstein', 'lithuania', 'luxembourg', 'malta', 'moldova',
-               'monaco', 'netherlands', 'north macedonia', 'norway', 'poland', 'portugal',
+               'monaco', 'netherlands', 'north ireland', 'north macedonia', 'norway', 'poland', 'portugal',
                'romania', 'san marino', 'serbia', 'slovakia', 'slovenia', 'spain', 'sweden', 'switzerland', 'uk',
                'ukraine', 'vatican city', ],
-    'south am': ['argentina', 'brazil', 'chile', 'colombia', 'ecuador', 'french guiana', 'paraguay', 'peru'],
+    'south am': ['argentina', 'bolivia', 'brazil', 'chile', 'colombia', 'ecuador', 'french guiana', 'paraguay', 'peru'],
     'se asia': ['brunei', 'cambodia', 'indonesia', 'malaysia', 'philippines', 'thailand', 'vietnam', 'singapore'],
     'east asia without china': ['hong kong', 'japan', 'macau', 'mongolia', 'taiwan', 'south korea', ],
     'mainland china': ['mainland china',],
     'aust nz': ['australia', 'new zealand'],
     'middle east': ['bahrain', 'iran', 'iraq', 'israel', 'jordan', 'kuwait', 'lebanon', 'palestine', 'qatar',
-                    'saudi arabia', 'oman', 'united arab emirates', ],
+                    'saudi arabia', 'oman', 'turkey', 'united arab emirates', ],
     'north am': ['canada', 'mexico', 'us', ],
-    'central am': ['costa rica', 'dominican republic', 'panama', 'martinique', 'saint barthelemy', 'st. martin'],
+    'central am': ['costa rica', 'dominican republic', 'honduras', 'jamaica',
+                   'panama', 'martinique', 'saint barthelemy', 'st. martin'],
     'cruise ships': ['cruise ships']
 }
 
+ALL_COUNTRIES = set()
+for cs in regions.values():
+    ALL_COUNTRIES.update(cs)
 
 def country_to_region(country):
     for region, country_list in regions.items():
@@ -197,16 +210,30 @@ def parse_daily_rep(fp, num_prev, confirmed, dead, recovered):
         assert header[rec_ind] == 'Recovered'
         for row in rit:
             country, prov, ship_ind = _proc_country_str(row[country_ind], row[prov_ind], ship_ind)
+
             for stat_ind, stat_dest in ind_dest_list:
+                new_country = country not in stat_dest
                 by_prov = stat_dest.setdefault(country, {})
+                if new_country and stat_ind == conf_ind:
+                    if country not in ALL_COUNTRIES:
+                        raise RuntimeError("Need to add '{}' to a region".format(country))
+                    # sys.stderr.write('"{}" new country in {}\n'.format(country, fp))
+                elif prov not in by_prov:
+                    pass # sys.stderr.write('"{}" new part of {} in {}\n'.format(prov, country, fp))
                 count_list = by_prov.setdefault(prov, [0]*num_prev)
                 # print(fp, country, prov, stat_ind, num_prev, len(count_list), count_list)
+                new_datum_str = row[stat_ind]
+                new_datum = int(new_datum_str) if new_datum_str else 0
                 if len(count_list) != num_prev:
                     if fp.endswith('03-08-2020.csv') and country == 'ireland':
                         continue
-                    assert len(count_list) == num_prev
-                new_datum_str = row[stat_ind]
-                new_datum = int(new_datum_str) if new_datum_str else 0
+                    if fp.endswith('03-11-2020.csv') and country == 'mainland china':
+                        if new_datum > count_list[-1]:
+                            count_list[-1] = new_datum
+                        continue
+                    if len(count_list) != num_prev:
+                        print('{}: "{}" / "{}" len(count_list)={} num_prev={}'.format(fp, country, prov, len(count_list), num_prev))
+                        assert len(count_list) == num_prev
                 count_list.append(new_datum)
                 #if country == 'us':
                 #    print('added {} to {} for {} {}'.format(new_datum_str, count_list, country, prov))

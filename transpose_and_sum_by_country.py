@@ -40,7 +40,8 @@ regions = {
                'monaco', 'netherlands', 'north ireland', 'north macedonia', 'norway', 'poland', 'portugal',
                'romania', 'san marino', 'serbia', 'slovakia', 'slovenia', 'spain', 'sweden', 'switzerland', 'uk',
                'ukraine', 'vatican city', ],
-    'south am': ['argentina', 'bolivia', 'brazil', 'chile', 'colombia', 'ecuador', 'french guiana', 'paraguay', 'peru'],
+    'south am': ['argentina', 'bolivia', 'brazil', 'chile', 'colombia', 'ecuador', 'french guiana',
+                 'guyana', 'paraguay', 'peru'],
     'se asia': ['brunei', 'cambodia', 'indonesia', 'malaysia', 'philippines', 'thailand', 'vietnam', 'singapore'],
     'east asia without china': ['hong kong', 'japan', 'macau', 'mongolia', 'taiwan', 'south korea', ],
     'mainland china': ['mainland china',],
@@ -48,7 +49,7 @@ regions = {
     'middle east': ['bahrain', 'iran', 'iraq', 'israel', 'jordan', 'kuwait', 'lebanon', 'palestine', 'qatar',
                     'saudi arabia', 'oman', 'turkey', 'united arab emirates', ],
     'north am': ['canada', 'mexico', 'us', ],
-    'central am': ['costa rica', 'dominican republic', 'honduras', 'jamaica',
+    'central am': ['costa rica', 'cuba', 'dominican republic', 'honduras', 'jamaica',
                    'panama', 'martinique', 'saint barthelemy', 'st. martin'],
     'cruise ships': ['cruise ships']
 }
@@ -227,7 +228,7 @@ def parse_daily_rep(fp, num_prev, confirmed, dead, recovered):
                 if len(count_list) != num_prev:
                     if fp.endswith('03-08-2020.csv') and country == 'ireland':
                         continue
-                    if fp.endswith('03-11-2020.csv') and country == 'mainland china':
+                    if (fp.endswith('03-11-2020.csv')  or fp.endswith('03-12-2020.csv'))and country == 'mainland china':
                         if new_datum > count_list[-1]:
                             count_list[-1] = new_datum
                         continue

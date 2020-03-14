@@ -22,15 +22,18 @@ aliases = {'iran (islamic republic of)': 'iran',
            'czechia': 'czech republic',
            'taiwan*': 'taiwan',
            'congo (kinshasa)': 'congo',
-           "cote d'ivoire": 'ivory coast'
+           "cote d'ivoire": 'ivory coast',
+           'fench guiana': 'french guiana',
+           'guernsey': 'channel islands',
            }
 
 regions = {
-    'central asia': ['afghanistan', 'armenia', 'azerbaijan', 'bangladesh', 'bhutan', 'georgia', 'india', 'maldives',
+    'central asia': ['afghanistan', 'armenia', 'azerbaijan', 'bangladesh', 'bhutan', 'georgia',
+                     'india', 'kazakhstan',  'maldives',
                      'nepal', 'pakistan', 'sri lanka', 'russia', ],
-    'africa': ['algeria', 'burkina faso', 'cameroon', 'congo', 'egypt',
-               'ivory coast', 'morocco', 'nigeria',
-               'reunion', 'senegal', 'south africa', 'togo',
+    'africa': ['algeria', 'burkina faso', 'cameroon', 'congo', 'egypt', 'ethiopia', 'gabon', 'ghana', 'guinea',
+               'ivory coast', 'kenya', 'morocco', 'nigeria',
+               'reunion', 'senegal', 'south africa', 'sudan', 'togo',
                'tunisia', ],
     'europe': ['albania', 'andorra', 'austria', 'belarus', 'belgium', 'bosnia and herzegovina', 'bulgaria',
                'channel islands', 'croatia', 'cyprus', 'czech republic',
@@ -45,12 +48,13 @@ regions = {
     'se asia': ['brunei', 'cambodia', 'indonesia', 'malaysia', 'philippines', 'thailand', 'vietnam', 'singapore'],
     'east asia without china': ['hong kong', 'japan', 'macau', 'mongolia', 'taiwan', 'south korea', ],
     'mainland china': ['mainland china',],
-    'aust nz': ['australia', 'new zealand'],
+    'aust nz': ['australia', 'french polynesia', 'new zealand'],
     'middle east': ['bahrain', 'iran', 'iraq', 'israel', 'jordan', 'kuwait', 'lebanon', 'palestine', 'qatar',
                     'saudi arabia', 'oman', 'turkey', 'united arab emirates', ],
     'north am': ['canada', 'mexico', 'us', ],
-    'central am': ['costa rica', 'cuba', 'dominican republic', 'honduras', 'jamaica',
-                   'panama', 'martinique', 'saint barthelemy', 'st. martin'],
+    'central am': ['antigua and barbuda', 'aruba', 'cayman islands', 'costa rica', 'cuba',
+                   'dominican republic', 'guadeloupe', 'honduras', 'jamaica',
+                   'panama', 'martinique', 'saint barthelemy', 'st. martin', 'trinidad and tobago'],
     'cruise ships': ['cruise ships']
 }
 
@@ -176,7 +180,7 @@ def accum_regions(by_country):
             sys.stderr.write('1 country region: {}\n'.format(k))
             regional[k] = list(by_country[v[0]])
         else:
-            regional[k] = sum_lists([by_country[i] for i in v if i in v])
+            regional[k] = sum_lists([by_country[i] for i in v if i in v and i in by_country])
             reg_meta.append((k, list(v)))
 
     regional['world'] = sum_lists(list(regional.values()))
@@ -228,7 +232,9 @@ def parse_daily_rep(fp, num_prev, confirmed, dead, recovered):
                 if len(count_list) != num_prev:
                     if fp.endswith('03-08-2020.csv') and country == 'ireland':
                         continue
-                    if (fp.endswith('03-11-2020.csv')  or fp.endswith('03-12-2020.csv'))and country == 'mainland china':
+                    known_dup = (fp.endswith('03-11-2020.csv')  or fp.endswith('03-12-2020.csv')) and country == 'mainland china'
+                    known_dup = known_dup or (fp.endswith('03-13-2020.csv') and country == 'french guiana')
+                    if known_dup:
                         if new_datum > count_list[-1]:
                             count_list[-1] = new_datum
                         continue

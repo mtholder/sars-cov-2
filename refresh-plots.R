@@ -18,7 +18,8 @@ confirmed$asdate = as.Date(confirmed$date, format="%m/%d/%Y")
 x = confirmed$asdate
 lx = length(x)
 xticks = c(x[1], x[lx/4], x[lx/2], x[3*lx/4], x[lx])
-lagx = x[2:length(x)]
+ncwin = 2
+lagx = x[(1+ncwin):length(x)]
 llagx = length(lagx)
 lagxticks = c(lagx[1], lagx[llagx/4], lagx[llagx/2], lagx[3*llagx/4], lagx[llagx])
 
@@ -42,7 +43,7 @@ for (ry in names(confirmed)) {
       recy = recovered[ry][[1]];
       plot(confirmed$asdate, y,
            log="y", type='l', 
-           ylim=c(1, 10E6),
+           ylim=c(1, 2*10E5),
            axes=FALSE, ylab="# confirmed cases", xlab="date", main=country)
       lines(confirmed$asdate, dy, col="red")
       lines(confirmed$asdate, recy, col="blue")
@@ -59,7 +60,15 @@ for (ry in names(confirmed)) {
       png(pngfn)
       # yticks = c(10E0, 10E1, 10E2, 10E3, 10E4, 10E5)
       nc = calc.new.cases(y)
-      barplot(nc, ylab="# new cases", xlab="", main=country, names.arg=lagx, las=3)
+      tdwnc = c()
+      for (i in ncwin:length(nc)) {
+        tind = i + 1 - ncwin;
+        tdwnc[tind] = 0;
+        for (j in 1:ncwin) {
+          tdwnc[tind] = tdwnc[tind] + (nc[1 + i - j]/ncwin) ;
+        }
+      }
+      barplot(tdwnc, ylab=paste("avg. # new cases prev ", ncwin, " days"), xlab="", main=country, names.arg=lagx, las=3)
       dev.off()
       if (min(nc) < 0) {
         print(paste("negative new case counts in ", country))
@@ -67,5 +76,6 @@ for (ry in names(confirmed)) {
     }
   } 
 }
+
 
 

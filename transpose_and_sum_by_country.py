@@ -382,8 +382,7 @@ the data available. Some notes:</p>
   <ul>
     <li>Variation in the time of day that data is gathered makes the plots of new cases for a day <b>very</b> noisy, even at 
     large geographic scales.
-    The cumulative data from more than 24 hours ago seems more reliable.
-    Some sort of sliding window approach for the new cases would be an improvement.</li>
+    So, the new cases plots are the average number of new cases for the 3 days prior to the date shown on the x-axis.</li>
     <li>The regions I used for aggregating the countries are fairly arbitrary.
 They reflect a mixture of geographic proximity and pragmatic considerations about what countries seem to be
 affected in similar ways by the disease in early March, 2020
@@ -418,7 +417,7 @@ def write_index(keys, meta, by_country, fn, fmt):
                    'active in black dashed<br/>'
                    '<font color="blue">recovered in blue</font><br />'
                    '<font color="red">deaths in red</font></div>'
-                   '</th><th><div align="center">New cases per day</div></th></tr>\n')
+                   '</th><th><div align="center">Average # of new case for the prior 3 days</div></th></tr>\n')
         top_group = meta.pop(0)
         _rec_table_rows(outp, top_group, meta, by_country, fmt)
         outp.write('</table>\n')

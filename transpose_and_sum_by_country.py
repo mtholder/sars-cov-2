@@ -97,7 +97,7 @@ def sum_lists(list_of_lists):
     for cts in loli:
         # print('summing', summed, 'len=', len(summed), 'and', cts, 'len=', len(cts))
         for n, el in enumerate(cts):
-            summed[n] += el_rec_table_rows
+            summed[n] += el
     return summed
 
 

@@ -97,7 +97,7 @@ def sum_lists(list_of_lists):
     for cts in loli:
         # print('summing', summed, 'len=', len(summed), 'and', cts, 'len=', len(cts))
         for n, el in enumerate(cts):
-            summed[n] += el
+            summed[n] += el_rec_table_rows
     return summed
 
 
@@ -383,6 +383,7 @@ They reflect a mixture of geographic proximity and pragmatic considerations abou
 affected in similar ways by the disease in early March, 2020
 If you want to look at the python dictionaries I'm using to group countries into, see:
 <a href="https://github.com/mtholder/sars-cov-2/blob/master/transpose_and_sum_by_country.py#L6-L62">transpose_and_sum_by_country.py#L6-L62</a></li>
+    <li>Within each region, countries are listed alphabetically</li>
     <li>The data are currently being read from the 'csse_covid_19_data/csse_covid_19_daily_reports' directory of the JHU
 git repo, because the data in the csse_covid_19_data/csse_covid_19_time_series underwent some change wrt how reporting was
 done within countries. See <a href="https://systems.jhu.edu/research/public-health/2019-ncov-map-faqs/">their FAQ</a>

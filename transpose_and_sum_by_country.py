@@ -25,6 +25,7 @@ aliases = {'iran (islamic republic of)': 'iran',
            "cote d'ivoire": 'ivory coast',
            'fench guiana': 'french guiana',
            'guernsey': 'channel islands',
+           'jersey': 'channel islands',
            }
 
 regions = {
@@ -32,8 +33,8 @@ regions = {
                      'india', 'kazakhstan',  'maldives',
                      'nepal', 'pakistan', 'sri lanka', 'russia', ],
     'africa': ['algeria', 'burkina faso', 'cameroon', 'congo', 'egypt', 'ethiopia', 'gabon', 'ghana', 'guinea',
-               'ivory coast', 'kenya', 'morocco', 'nigeria',
-               'reunion', 'senegal', 'south africa', 'sudan', 'togo',
+               'ivory coast', 'kenya', 'mauritania', 'morocco', 'namibia', 'nigeria',
+               'reunion', 'rwanda', 'senegal', 'seychelles', 'south africa', 'sudan', 'eswatini', 'togo',
                'tunisia', ],
     'europe': ['albania', 'andorra', 'austria', 'belarus', 'belgium', 'bosnia and herzegovina', 'bulgaria',
                'channel islands', 'croatia', 'cyprus', 'czech republic',
@@ -44,7 +45,7 @@ regions = {
                'romania', 'san marino', 'serbia', 'slovakia', 'slovenia', 'spain', 'sweden', 'switzerland', 'uk',
                'ukraine', 'vatican city', ],
     'south am': ['argentina', 'bolivia', 'brazil', 'chile', 'colombia', 'ecuador', 'french guiana',
-                 'guyana', 'paraguay', 'peru'],
+                 'guyana', 'paraguay', 'peru', 'suriname', 'uruguay', 'venezuela'],
     'se asia': ['brunei', 'cambodia', 'indonesia', 'malaysia', 'philippines', 'thailand', 'vietnam', 'singapore'],
     'east asia without china': ['hong kong', 'japan', 'macau', 'mongolia', 'taiwan', 'south korea', ],
     'mainland china': ['mainland china',],
@@ -52,9 +53,11 @@ regions = {
     'middle east': ['bahrain', 'iran', 'iraq', 'israel', 'jordan', 'kuwait', 'lebanon', 'palestine', 'qatar',
                     'saudi arabia', 'oman', 'turkey', 'united arab emirates', ],
     'north am': ['canada', 'mexico', 'us', ],
-    'central am': ['antigua and barbuda', 'aruba', 'cayman islands', 'costa rica', 'cuba',
-                   'dominican republic', 'guadeloupe', 'honduras', 'jamaica',
-                   'panama', 'martinique', 'saint barthelemy', 'st. martin', 'trinidad and tobago'],
+    'central am': ['antigua and barbuda', 'aruba', 'cayman islands', 'costa rica', 'cuba', 'curacao',
+                   'dominican republic', 'guadeloupe', 'guatemala', 'honduras', 'jamaica',
+                   'panama', 'martinique', 'saint barthelemy', 'saint vincent and the grenadines',
+                   'saint lucia', 'st. martin',
+                   'trinidad and tobago'],
     'cruise ships': ['cruise ships']
 }
 
@@ -234,6 +237,7 @@ def parse_daily_rep(fp, num_prev, confirmed, dead, recovered):
                         continue
                     known_dup = (fp.endswith('03-11-2020.csv')  or fp.endswith('03-12-2020.csv')) and country == 'mainland china'
                     known_dup = known_dup or (fp.endswith('03-13-2020.csv') and country == 'french guiana')
+                    known_dup = known_dup or (fp.endswith('03-14-2020.csv') and country == 'channel islands')
                     if known_dup:
                         if new_datum > count_list[-1]:
                             count_list[-1] = new_datum

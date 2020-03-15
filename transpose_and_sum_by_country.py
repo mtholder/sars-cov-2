@@ -269,6 +269,8 @@ def dump_csv(fn, key_order, data_dict, num_data_rows):
 def _write_index_conf_row(outp, x, by_country, fmt_list):
     from xml.sax.saxutils import quoteattr
     c = by_country['confirmed'].get(x, [0])[-1]
+    if c < 5:
+        return
     d = by_country['dead'].get(x, [0])[-1]
     r = by_country['recovered'].get(x, [0])[-1]
     ax = quoteattr(x)
@@ -378,12 +380,17 @@ All of the hard work need to generate these graphs is being done by the the John
 of health care workers who are collecting the data; and large number of public health workers who are making
 the data available. Some notes:</p>
   <ul>
+    <li>Variation in the time of day that data is gathered makes the plots of new cases for a day <b>very</b> noisy, even at 
+    large geographic scales.
+    The cumulative data from more than 24 hours ago seems more reliable.
+    Some sort of sliding window approach for the new cases would be an improvement.</li>
     <li>The regions I used for aggregating the countries are fairly arbitrary.
 They reflect a mixture of geographic proximity and pragmatic considerations about what countries seem to be
 affected in similar ways by the disease in early March, 2020
 If you want to look at the python dictionaries I'm using to group countries into, see:
 <a href="https://github.com/mtholder/sars-cov-2/blob/master/transpose_and_sum_by_country.py#L6-L62">transpose_and_sum_by_country.py#L6-L62</a></li>
     <li>Within each region, countries are listed alphabetically</li>
+    <li>Countries with fewer than 5 cases are not plotted</li>
     <li>The data are currently being read from the 'csse_covid_19_data/csse_covid_19_daily_reports' directory of the JHU
 git repo, because the data in the csse_covid_19_data/csse_covid_19_time_series underwent some change wrt how reporting was
 done within countries. See <a href="https://systems.jhu.edu/research/public-health/2019-ncov-map-faqs/">their FAQ</a>

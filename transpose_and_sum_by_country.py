@@ -395,9 +395,10 @@ git repo, because the data in the csse_covid_19_data/csse_covid_19_time_series u
 done within countries. See <a href="https://systems.jhu.edu/research/public-health/2019-ncov-map-faqs/">their FAQ</a>
 and <a href="https://github.com/CSSEGISandData/COVID-19/issues/382">issue-382</a>.</li>
     <li>The raw data do show some drops in the cumulative case counts in several countries. This would be impossible if
-    the data were completely accurates. These errors creep in do to the JHU researchers aggregating several different
+    the data were completely accurate. These errors creep in because the JHU researchers aggregating several different
     sources (as they note in their Terms of Use statement). My scripts do not attempt to correct these issues. They do 
-    attempt to correct the same locality having multiple names (see the <code>aliases</code> variable in transpose_and_sum_by_country.py)
+    attempt to correct cases of the same locality having multiple names
+    (see the <code>aliases</code> variable in transpose_and_sum_by_country.py)
      and some localities having duplicate entries in the daily reports (see the <code>known_dup</code> variable
     in my transpose_and_sum_by_country.py).</li>
     <li>The Johns Hopkins U. data is updated about once a day (usually in the late afternoon/evening in USA). See

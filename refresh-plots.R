@@ -18,7 +18,7 @@ confirmed$asdate = as.Date(confirmed$date, format="%m/%d/%Y")
 x = confirmed$asdate
 lx = length(x)
 xticks = c(x[1], x[lx/4], x[lx/2], x[3*lx/4], x[lx])
-ncwin = 2
+ncwin = 3
 lagx = x[(1+ncwin):length(x)]
 llagx = length(lagx)
 lagxticks = c(lagx[1], lagx[llagx/4], lagx[llagx/2], lagx[3*llagx/4], lagx[llagx])
@@ -28,7 +28,7 @@ cnc = calc.new.cases(confirmed$mainland.china)
 upp.plot.lim.wnc = upper.plot.limit(max(wnc)) # not quite right, but works in p
 upp.plot.lim.cnc = upper.plot.limit(max(wnc)) # not quite right, but works in p
 upp.nc.plot.lim = max(upp.plot.lim.cnc, upp.plot.lim.wnc)
-
+polyx = c(confirmed$asdate, rev(confirmed$asdate))
 for (ry in names(confirmed)) {
   if (ry != "date" && ry != "asdate") {
     country <- gsub("\\.", "-", ry);
@@ -73,9 +73,32 @@ for (ry in names(confirmed)) {
       if (min(nc) < 0) {
         print(paste("negative new case counts in ", country))
       }
+      
+      # z = dead[ry][[1]];
+      # w = recovered[ry][[1]];
+      # w[is.nan(w)] <- 0
+      # z[is.nan(z)] <- 0
+      # y[is.nan(y)] <- 0
+      # if (max(z) > 3) {
+      #   pngfn = paste("plots/fatalityrates/fatalityrates-", country, ".png", sep="");
+      #   png(pngfn);
+      #   plot(confirmed$asdate, z/(z+w), type="l", ylim=c(0, .2), col="red");
+      #   denom = z+w;
+      #   denom[denom < 1] = 1
+      #   polyy = c(z/denom, 0*z/denom);
+      #   denom = y
+      #   denom[denom < 1] = 1
+      #   polyy2 = c(z/denom, 0*denom);
+      #   print(paste(country, " polyy"))
+      #   print(polyy)
+      #   print("polyy2")
+      #   print(polyy2)
+      #   polygon(polyx, polyy, col="red", border="red");
+      #   polygon(polyx, polyy2, col="black", border="black");
+      #   abline(h=c(0.01), col="white")
+      #   dev.off();
+      # }
     }
   } 
 }
-
-
 

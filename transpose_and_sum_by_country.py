@@ -32,14 +32,14 @@ regions = {
     'africa': ['algeria', 'benin', 'burkina faso', 'cameroon', 'central african republic', 'congo', 'republic of the congo', 'congo (brazzaville)',
                'egypt', 'equatorial guinea', 'eswatini', 'ethiopia',
                'gabon', 'ghana', 'guinea', 'ivory coast', 'kenya', 'liberia', 'mauritania', 'mayotte', 'morocco', 'namibia', 'nigeria',
-               'reunion', 'rwanda', 'senegal', 'seychelles', 'somalia', 'south africa', 'sudan', 'tanzania', 'togo',
+               'reunion', 'rwanda', 'senegal', 'seychelles', 'somalia', 'south africa', 'sudan', 'tanzania', 'the gambia',  'togo',
                'tunisia', ],
     'europe': ['albania', 'andorra', 'austria', 'belarus', 'belgium', 'bosnia and herzegovina', 'bulgaria',
                'channel islands', 'croatia', 'cyprus', 'czech republic',
                'denmark', 'estonia', 'faroe islands', 'finland', 'france',
                'germany', 'gibraltar', 'greece', 'guernsey', 'hungary',
                'iceland', 'ireland', 'italy', 'jersey', 'kosovo', 'latvia', 'liechtenstein', 'lithuania', 'luxembourg', 'malta', 'moldova',
-               'monaco', 'netherlands', 'north ireland', 'north macedonia', 'norway', 'poland', 'portugal',
+               'monaco', 'montenegro', 'netherlands', 'north ireland', 'north macedonia', 'norway', 'poland', 'portugal',
                'romania', 'san marino', 'serbia', 'slovakia', 'slovenia', 'spain', 'sweden', 'switzerland', 'uk',
                'ukraine', 'vatican city', ],
     'south am': ['argentina', 'bolivia', 'brazil', 'chile', 'colombia', 'ecuador', 'french guiana',
@@ -51,7 +51,7 @@ regions = {
     'middle east': ['bahrain', 'iran', 'iraq', 'israel', 'jordan', 'kuwait', 'lebanon', 'palestine', 'qatar',
                     'saudi arabia', 'oman', 'turkey', 'united arab emirates', ],
     'north am': ['canada', 'greenland', 'mexico', 'us', ],
-    'central am': ['antigua and barbuda', 'aruba', 'cayman islands', 'costa rica', 'cuba', 'curacao',
+    'central am': ['antigua and barbuda', 'aruba', 'barbados', 'cayman islands', 'costa rica', 'cuba', 'curacao',
                    'dominican republic', 'guadeloupe', 'guatemala', 'honduras', 'jamaica',
                    'martinique', 'panama', 'puerto rico', 'saint barthelemy', 'saint vincent and the grenadines',
                    'saint lucia', 'st. martin',
@@ -370,7 +370,7 @@ copyright 2020 Johns Hopkins University, all rights reserved, is provided to the
  including accuracy, fitness for use, and merchantability.
 Reliance on the Website for medical guidance or use of the Website in commerce is strictly prohibited."</p>
 <p>
-I found my self graphing the counts of cases by country on a log scale, frequently.
+I found myself graphing the counts of cases by country on a log scale, frequently.
 So I decided to generate those plots via scripts. 
 My code for doing that is at <a href="https://github.com/mtholder/sars-cov-2">https://github.com/mtholder/sars-cov-2</a>, 
 but it doesn't do a whole lot more than group their data by country and regions. 

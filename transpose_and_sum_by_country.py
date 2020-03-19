@@ -23,17 +23,19 @@ aliases = {'iran (islamic republic of)': 'iran',
            'congo (kinshasa)': 'congo',
            "cote d'ivoire": 'ivory coast',
            'fench guiana': 'french guiana',
+           'gambia': 'the gambia',
+           'gambia, the': 'the gambia',
            }
 
 regions = {
     'central asia': ['afghanistan', 'armenia', 'azerbaijan', 'bangladesh', 'bhutan', 'georgia',
-                     'india', 'kazakhstan', 'maldives',
+                     'india', 'kazakhstan', 'kyrgyzstan', 'maldives',
                      'nepal', 'pakistan', 'sri lanka', 'russia', 'uzbekistan',],
     'africa': ['algeria', 'benin', 'burkina faso', 'cameroon', 'central african republic', 'congo', 'republic of the congo', 'congo (brazzaville)',
-               'egypt', 'equatorial guinea', 'eswatini', 'ethiopia',
-               'gabon', 'ghana', 'guinea', 'ivory coast', 'kenya', 'liberia', 'mauritania', 'mayotte', 'morocco', 'namibia', 'nigeria',
+               'djibouti', 'egypt', 'equatorial guinea', 'eswatini', 'ethiopia',
+               'gabon', 'ghana', 'guinea', 'ivory coast', 'kenya', 'liberia', 'mauritania', 'mauritius', 'mayotte', 'morocco', 'namibia', 'nigeria',
                'reunion', 'rwanda', 'senegal', 'seychelles', 'somalia', 'south africa', 'sudan', 'tanzania', 'the gambia',  'togo',
-               'tunisia', ],
+               'tunisia', 'zambia'],
     'europe': ['albania', 'andorra', 'austria', 'belarus', 'belgium', 'bosnia and herzegovina', 'bulgaria',
                'channel islands', 'croatia', 'cyprus', 'czech republic',
                'denmark', 'estonia', 'faroe islands', 'finland', 'france',
@@ -178,6 +180,7 @@ def parse_daily_rep(fp, num_prev, confirmed, dead, recovered):
                         '03-12-2020.csv')) and country == 'mainland china'
                     known_dup = known_dup or (fp.endswith('03-13-2020.csv') and country == 'french guiana')
                     known_dup = known_dup or (fp.endswith('03-14-2020.csv') and country == 'channel islands')
+                    known_dup = known_dup or (fp.endswith('03-18-2020.csv') and country == 'the gambia')
                     if known_dup:
                         if new_datum > count_list[-1]:
                             count_list[-1] = new_datum

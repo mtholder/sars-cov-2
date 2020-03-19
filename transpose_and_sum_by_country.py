@@ -104,6 +104,14 @@ def sum_lists(list_of_lists):
 def accum_by_country(raw_by_country):
     bc = {}
     for country, prov_dict in raw_by_country.items():
+        if country == 'us':
+            print('us')
+            for k, v in prov_dict.items():
+                if ',' in k:
+                    continue
+                sv = sum(v)
+                if sv > 0:
+                    print('US-loc "{}" => {}, {}'.format(k, sum(v), v))
         # print(country, prov_dict)
         # for k, v in prov_dict.items():
         #     print('  ', k)

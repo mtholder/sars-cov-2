@@ -3,64 +3,6 @@ import sys
 import csv
 import os
 
-state_name_to_abbrev = {
-    'alabama': 'al',
-    'alaska': 'ak',
-    'arizona': 'az',
-    'arkansas': 'ar',
-    'california': 'ca',
-    'colorado': 'co',
-    'connecticut': 'ct',
-    'delaware': 'de',
-    'district of columbia': 'dc',
-    'florida': 'fl',
-    'georgia': 'ga',
-    'hawaii': 'hi',
-    'idaho': 'id',
-    'illinois': 'il',
-    'indiana': 'in',
-    'iowa': 'ia',
-    'kansas': 'ks',
-    'kentucky': 'ky',
-    'louisiana': 'la',
-    'maine': 'me',
-    'maryland': 'md',
-    'massachusetts': 'ma',
-    'michigan': 'mi',
-    'minnesota': 'mn',
-    'mississippi': 'ms',
-    'missouri': 'mo',
-    'montana': 'mt',
-    'nebraska': 'ne',
-    'nevada': 'nv',
-    'new hampshire': 'nh',
-    'new jersey': 'nj',
-    'new mexico': 'nm',
-    'new york': 'ny',
-    'north carolina': 'nc',
-    'north dakota': 'nd',
-    'northern mariana islands':'mp',
-    'ohio': 'oh',
-    'oklahoma': 'ok',
-    'oregon': 'or',
-    'palau': 'pw',
-    'pennsylvania': 'pa',
-    'puerto rico': 'pr',
-    'rhode island': 'ri',
-    'south carolina': 'sc',
-    'south dakota': 'sd',
-    'tennessee': 'tn',
-    'texas': 'tx',
-    'utah': 'ut',
-    'vermont': 'vt',
-    'virgin islands': 'vi',
-    'virginia': 'va',
-    'washington': 'wa',
-    'west virginia': 'wv',
-    'wisconsin': 'wi',
-    'wyoming': 'wy',
-}
-
 aliases = {'iran (islamic republic of)': 'iran',
            'holy see': 'vatican city',
            'republic of ireland': 'ireland',
@@ -120,6 +62,71 @@ regions = {
     'cruise ships': ['cruise ships']
 }
 
+state_name_to_abbrev = {
+    'alabama': 'al',
+    'alaska': 'ak',
+    'arizona': 'az',
+    'arkansas': 'ar',
+    'california': 'ca',
+    'colorado': 'co',
+    'connecticut': 'ct',
+    'delaware': 'de',
+    'dc': 'dc',
+    'florida': 'fl',
+    'georgia': 'ga',
+    'hawaii': 'hi',
+    'idaho': 'id',
+    'illinois': 'il',
+    'indiana': 'in',
+    'iowa': 'ia',
+    'kansas': 'ks',
+    'kentucky': 'ky',
+    'louisiana': 'la',
+    'maine': 'me',
+    'maryland': 'md',
+    'massachusetts': 'ma',
+    'michigan': 'mi',
+    'minnesota': 'mn',
+    'mississippi': 'ms',
+    'missouri': 'mo',
+    'montana': 'mt',
+    'nebraska': 'ne',
+    'nevada': 'nv',
+    'new hampshire': 'nh',
+    'new jersey': 'nj',
+    'new mexico': 'nm',
+    'new york': 'ny',
+    'north carolina': 'nc',
+    'north dakota': 'nd',
+    'northern mariana islands':'mp',
+    'ohio': 'oh',
+    'oklahoma': 'ok',
+    'oregon': 'or',
+    'palau': 'pw',
+    'pennsylvania': 'pa',
+    'puerto rico': 'pr',
+    'rhode island': 'ri',
+    'south carolina': 'sc',
+    'south dakota': 'sd',
+    'tennessee': 'tn',
+    'texas': 'tx',
+    'utah': 'ut',
+    'vermont': 'vt',
+    'virgin islands': 'vi',
+    'virginia': 'va',
+    'washington': 'wa',
+    'west virginia': 'wv',
+    'wisconsin': 'wi',
+    'wyoming': 'wy',
+    'guam': 'guam', # not a two-letter, code, I know...
+}
+_abbrev_to_state_name = {v:k for k, v in state_name_to_abbrev.items()}
+_abbrev_to_state_name['d.c.'] = 'dc'
+_us_loc_to_state = {'chicago': 'illinois',
+                    'district of columbia': 'dc',
+                    'united states virgin islands': 'virgin islands',
+                   }
+
 
 ALL_COUNTRIES = set()
 for cs in regions.values():
@@ -162,20 +169,39 @@ def sum_lists(list_of_lists):
 
 def accum_by_country(raw_by_country):
     bc = {}
+    _by_us_state = {}
     for country, prov_dict in raw_by_country.items():
         if country == 'us':
-            print('us')
             for k, v in prov_dict.items():
                 if ',' in k:
-                    continue
-                sv = sum(v)
-                if sv > 0:
-                    print('US-loc "{}" => {}, {}'.format(k, sum(v), v))
+                    tla = k.split(',')[-1].strip()
+                    try:
+                        state_name = _abbrev_to_state_name[tla]
+                    except:
+                        if 'virgin islands' in k:
+                            state_name = 'virgin islands'
+                        else:
+                            raise NotImplementedError('translating "{}"'.format(k))
+                else:
+                    state_name = _us_loc_to_state.get(k, k)
+                    if state_name not in state_name_to_abbrev:
+                        if state_name == 'us':
+                            pass
+                        else:
+                            raise NotImplementedError('recognition of state "{}" -> {}'.format(k, v))
+                cv = _by_us_state.get(state_name)
+                if cv:
+                    _by_us_state[state_name] = sum_lists([cv, v])
+                else:
+                    _by_us_state[state_name] = list(v)
         # print(country, prov_dict)
         # for k, v in prov_dict.items():
         #     print('  ', k)
         #     print('  ', v)
         bc[country] = sum_lists(list(prov_dict.values()))
+    for k, v in _by_us_state.items():
+        bc['us-loc-{}'.format(k)] = v
+    print(_by_us_state)
     return bc
 
 
@@ -196,10 +222,14 @@ def accum_regions(by_country):
     east_asia_keys = ['mainland china', 'east asia without china']
     regional['east asia'] = sum_lists([regional[i] for i in east_asia_keys])
     by_country.update(regional)
+    us_loc_label = 'us-loc'
     reg_order = ['east asia', 'europe', 'north am', 'middle east', 'se asia',
-                 'central asia', 'africa', 'south am', 'aust nz', 'central am', 'cruise ships']
+                 'central asia', 'africa', 'south am', 'aust nz', 'central am', 'cruise ships', us_loc_label]
     meta = [('world', reg_order), ('east asia', east_asia_keys)]
     meta.extend(reg_meta)
+    us_loc_list = [i for i in by_country.keys() if i.startswith('us-loc-')]
+    us_loc_list.sort()
+    meta.append((us_loc_label, us_loc_list))
     return by_country, meta
 
 
@@ -337,15 +367,17 @@ def dump_csv(fn, key_order, data_dict, num_data_rows):
 
 def _write_index_conf_row(outp, x, by_country, fmt_list):
     from xml.sax.saxutils import quoteattr
+    ax = quoteattr(x)
+    if x == 'us-loc':
+        x = 'us'
     c = by_country['confirmed'].get(x, [0])[-1]
     if c < 5:
         return
     d = by_country['dead'].get(x, [0])[-1]
     r = by_country['recovered'].get(x, [0])[-1]
-    ax = quoteattr(x)
-    outp.write(
-        '<tr id={}><td><div align="right"> {}<br />cases: {:7,}<br />deaths: {:7,}<br />recovered: {:7,}<br />active {:7,}</div></td>'.format(
-            ax, x, c, d, r, c - d - r))
+    # print(ax)
+    trfmt = '<tr id={}><td><div align="right"> {}<br />cases: {:7,}<br />deaths: {:7,}<br />recovered: {:7,}<br />active {:7,}</div></td>'
+    outp.write(trfmt.format(ax, x, c, d, r, c - d - r))
     for fmt in fmt_list:
         mog_x = fmt.format('-'.join(x.split(' ')))
         outp.write('<td><img src="{}" alt="{}"/></td>'.format(mog_x, x))
@@ -420,6 +452,7 @@ PREFACE = '''<html>
   <a href="#aust nz">Australia+NZ+</a>
   <a href="#central am">Central Am.+Carib.</a>
   <a href="#cruise ships">Cruise Ships</a>
+  <a href="#us-loc">Within US</a>
 </div>
 <div class="main">
 

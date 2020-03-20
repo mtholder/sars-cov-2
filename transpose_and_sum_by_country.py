@@ -3,6 +3,64 @@ import sys
 import csv
 import os
 
+state_name_to_abbrev = {
+    'alabama': 'al',
+    'alaska': 'ak',
+    'arizona': 'az',
+    'arkansas': 'ar',
+    'california': 'ca',
+    'colorado': 'co',
+    'connecticut': 'ct',
+    'delaware': 'de',
+    'district of columbia': 'dc',
+    'florida': 'fl',
+    'georgia': 'ga',
+    'hawaii': 'hi',
+    'idaho': 'id',
+    'illinois': 'il',
+    'indiana': 'in',
+    'iowa': 'ia',
+    'kansas': 'ks',
+    'kentucky': 'ky',
+    'louisiana': 'la',
+    'maine': 'me',
+    'maryland': 'md',
+    'massachusetts': 'ma',
+    'michigan': 'mi',
+    'minnesota': 'mn',
+    'mississippi': 'ms',
+    'missouri': 'mo',
+    'montana': 'mt',
+    'nebraska': 'ne',
+    'nevada': 'nv',
+    'new hampshire': 'nh',
+    'new jersey': 'nj',
+    'new mexico': 'nm',
+    'new york': 'ny',
+    'north carolina': 'nc',
+    'north dakota': 'nd',
+    'northern mariana islands':'mp',
+    'ohio': 'oh',
+    'oklahoma': 'ok',
+    'oregon': 'or',
+    'palau': 'pw',
+    'pennsylvania': 'pa',
+    'puerto rico': 'pr',
+    'rhode island': 'ri',
+    'south carolina': 'sc',
+    'south dakota': 'sd',
+    'tennessee': 'tn',
+    'texas': 'tx',
+    'utah': 'ut',
+    'vermont': 'vt',
+    'virgin islands': 'vi',
+    'virginia': 'va',
+    'washington': 'wa',
+    'west virginia': 'wv',
+    'wisconsin': 'wi',
+    'wyoming': 'wy',
+}
+
 aliases = {'iran (islamic republic of)': 'iran',
            'holy see': 'vatican city',
            'republic of ireland': 'ireland',
@@ -25,13 +83,14 @@ aliases = {'iran (islamic republic of)': 'iran',
            'fench guiana': 'french guiana',
            'gambia': 'the gambia',
            'gambia, the': 'the gambia',
+           'bahamas, the': 'the bahamas',
            }
 
 regions = {
     'central asia': ['afghanistan', 'armenia', 'azerbaijan', 'bangladesh', 'bhutan', 'georgia',
                      'india', 'kazakhstan', 'kyrgyzstan', 'maldives',
                      'nepal', 'pakistan', 'sri lanka', 'russia', 'uzbekistan',],
-    'africa': ['algeria', 'benin', 'burkina faso', 'cameroon', 'central african republic', 'congo', 'republic of the congo', 'congo (brazzaville)',
+    'africa': ['algeria', 'benin', 'burkina faso', 'cameroon', 'chad', 'central african republic', 'congo', 'republic of the congo', 'congo (brazzaville)',
                'djibouti', 'egypt', 'equatorial guinea', 'eswatini', 'ethiopia',
                'gabon', 'ghana', 'guinea', 'ivory coast', 'kenya', 'liberia', 'mauritania', 'mauritius', 'mayotte', 'morocco', 'namibia', 'nigeria',
                'reunion', 'rwanda', 'senegal', 'seychelles', 'somalia', 'south africa', 'sudan', 'tanzania', 'the gambia',  'togo',
@@ -46,7 +105,7 @@ regions = {
                'ukraine', 'vatican city', ],
     'south am': ['argentina', 'bolivia', 'brazil', 'chile', 'colombia', 'ecuador', 'french guiana',
                  'guyana', 'paraguay', 'peru', 'suriname', 'uruguay', 'venezuela'],
-    'se asia': ['brunei', 'cambodia', 'guam', 'indonesia', 'malaysia', 'philippines', 'thailand', 'vietnam', 'singapore'],
+    'se asia': ['brunei', 'cambodia', 'fiji', 'guam', 'indonesia', 'malaysia', 'philippines', 'thailand', 'vietnam', 'singapore'],
     'east asia without china': ['hong kong', 'japan', 'macau', 'mongolia', 'taiwan', 'south korea', ],
     'mainland china': ['mainland china', ],
     'aust nz': ['australia', 'french polynesia', 'new zealand'],
@@ -54,8 +113,8 @@ regions = {
                     'saudi arabia', 'oman', 'turkey', 'united arab emirates', ],
     'north am': ['canada', 'greenland', 'mexico', 'us', ],
     'central am': ['antigua and barbuda', 'aruba', 'barbados', 'cayman islands', 'costa rica', 'cuba', 'curacao',
-                   'dominican republic', 'guadeloupe', 'guatemala', 'honduras', 'jamaica',
-                   'martinique', 'panama', 'puerto rico', 'saint barthelemy', 'saint vincent and the grenadines',
+                   'dominican republic', 'el salvador', 'guadeloupe', 'guatemala', 'honduras', 'jamaica',
+                   'martinique', 'nicaragua', 'panama', 'puerto rico', 'saint barthelemy', 'saint vincent and the grenadines',
                    'saint lucia', 'st. martin',
                    'the bahamas', 'trinidad and tobago'],
     'cruise ships': ['cruise ships']
@@ -188,7 +247,8 @@ def parse_daily_rep(fp, num_prev, confirmed, dead, recovered):
                         '03-12-2020.csv')) and country == 'mainland china'
                     known_dup = known_dup or (fp.endswith('03-13-2020.csv') and country == 'french guiana')
                     known_dup = known_dup or (fp.endswith('03-14-2020.csv') and country == 'channel islands')
-                    known_dup = known_dup or (fp.endswith('03-18-2020.csv') and country == 'the gambia')
+                    known_dup = known_dup or (country == 'the gambia')
+                    known_dup = known_dup or (fp.endswith('03-19-2020.csv') and country == 'the bahamas')
                     if known_dup:
                         if new_datum > count_list[-1]:
                             count_list[-1] = new_datum

@@ -32,11 +32,11 @@ regions = {
     'central asia': ['afghanistan', 'armenia', 'azerbaijan', 'bangladesh', 'bhutan', 'georgia',
                      'india', 'kazakhstan', 'kyrgyzstan', 'maldives',
                      'nepal', 'pakistan', 'sri lanka', 'russia', 'uzbekistan',],
-    'africa': ['algeria', 'benin', 'burkina faso', 'cameroon', 'chad', 'central african republic', 'congo', 'republic of the congo', 'congo (brazzaville)',
+    'africa': ['algeria', 'angola', 'benin', 'burkina faso', 'cabo verde', 'cameroon', 'chad', 'central african republic', 'congo', 'republic of the congo', 'congo (brazzaville)',
                'djibouti', 'egypt', 'equatorial guinea', 'eswatini', 'ethiopia',
-               'gabon', 'ghana', 'guinea', 'ivory coast', 'kenya', 'liberia', 'mauritania', 'mauritius', 'mayotte', 'morocco', 'namibia', 'nigeria',
+               'gabon', 'ghana', 'guinea', 'ivory coast', 'kenya', 'liberia', 'madagascar', 'mauritania', 'mauritius', 'mayotte', 'morocco', 'namibia', 'niger', 'nigeria',
                'reunion', 'rwanda', 'senegal', 'seychelles', 'somalia', 'south africa', 'sudan', 'tanzania', 'the gambia',  'togo',
-               'tunisia', 'zambia'],
+               'tunisia', 'zambia', 'zimbabwe'],
     'europe': ['albania', 'andorra', 'austria', 'belarus', 'belgium', 'bosnia and herzegovina', 'bulgaria',
                'channel islands', 'croatia', 'cyprus', 'czech republic',
                'denmark', 'estonia', 'faroe islands', 'finland', 'france',
@@ -50,12 +50,12 @@ regions = {
     'se asia': ['brunei', 'cambodia', 'fiji', 'guam', 'indonesia', 'malaysia', 'philippines', 'thailand', 'vietnam', 'singapore'],
     'east asia without china': ['hong kong', 'japan', 'macau', 'mongolia', 'taiwan', 'south korea', ],
     'mainland china': ['mainland china', ],
-    'aust nz': ['australia', 'french polynesia', 'new zealand'],
+    'aust nz': ['australia', 'french polynesia', 'new zealand', 'papua new guinea',],
     'middle east': ['bahrain', 'iran', 'iraq', 'israel', 'jordan', 'kuwait', 'lebanon', 'palestine', 'qatar',
                     'saudi arabia', 'oman', 'turkey', 'united arab emirates', ],
     'north am': ['canada', 'greenland', 'mexico', 'us', ],
     'central am': ['antigua and barbuda', 'aruba', 'barbados', 'cayman islands', 'costa rica', 'cuba', 'curacao',
-                   'dominican republic', 'el salvador', 'guadeloupe', 'guatemala', 'honduras', 'jamaica',
+                   'dominican republic', 'el salvador', 'guadeloupe', 'guatemala', 'haiti', 'honduras', 'jamaica',
                    'martinique', 'nicaragua', 'panama', 'puerto rico', 'saint barthelemy', 'saint vincent and the grenadines',
                    'saint lucia', 'st. martin',
                    'the bahamas', 'trinidad and tobago'],
@@ -201,7 +201,7 @@ def accum_by_country(raw_by_country):
         bc[country] = sum_lists(list(prov_dict.values()))
     for k, v in _by_us_state.items():
         bc['us-loc-{}'.format(k)] = v
-    print(_by_us_state)
+    # print(_by_us_state)
     return bc
 
 
@@ -278,7 +278,7 @@ def parse_daily_rep(fp, num_prev, confirmed, dead, recovered):
                     known_dup = known_dup or (fp.endswith('03-13-2020.csv') and country == 'french guiana')
                     known_dup = known_dup or (fp.endswith('03-14-2020.csv') and country == 'channel islands')
                     known_dup = known_dup or (country == 'the gambia')
-                    known_dup = known_dup or (fp.endswith('03-19-2020.csv') and country == 'the bahamas')
+                    known_dup = known_dup or country == 'the bahamas'
                     if known_dup:
                         if new_datum > count_list[-1]:
                             count_list[-1] = new_datum

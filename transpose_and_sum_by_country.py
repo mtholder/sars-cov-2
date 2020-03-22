@@ -26,6 +26,7 @@ aliases = {'iran (islamic republic of)': 'iran',
            'gambia': 'the gambia',
            'gambia, the': 'the gambia',
            'bahamas, the': 'the bahamas',
+           'cape verde': 'cabo verde',
            }
 
 regions = {
@@ -33,9 +34,9 @@ regions = {
                      'india', 'kazakhstan', 'kyrgyzstan', 'maldives',
                      'nepal', 'pakistan', 'sri lanka', 'russia', 'uzbekistan',],
     'africa': ['algeria', 'angola', 'benin', 'burkina faso', 'cabo verde', 'cameroon', 'chad', 'central african republic', 'congo', 'republic of the congo', 'congo (brazzaville)',
-               'djibouti', 'egypt', 'equatorial guinea', 'eswatini', 'ethiopia',
+               'djibouti', 'egypt', 'equatorial guinea', 'eritrea', 'eswatini', 'ethiopia',
                'gabon', 'ghana', 'guinea', 'ivory coast', 'kenya', 'liberia', 'madagascar', 'mauritania', 'mauritius', 'mayotte', 'morocco', 'namibia', 'niger', 'nigeria',
-               'reunion', 'rwanda', 'senegal', 'seychelles', 'somalia', 'south africa', 'sudan', 'tanzania', 'the gambia',  'togo',
+               'reunion', 'rwanda', 'senegal', 'seychelles', 'somalia', 'south africa', 'sudan', 'tanzania', 'the gambia',  'togo', 'uganda',
                'tunisia', 'zambia', 'zimbabwe'],
     'europe': ['albania', 'andorra', 'austria', 'belarus', 'belgium', 'bosnia and herzegovina', 'bulgaria',
                'channel islands', 'croatia', 'cyprus', 'czech republic',
@@ -47,7 +48,8 @@ regions = {
                'ukraine', 'vatican city', ],
     'south am': ['argentina', 'bolivia', 'brazil', 'chile', 'colombia', 'ecuador', 'french guiana',
                  'guyana', 'paraguay', 'peru', 'suriname', 'uruguay', 'venezuela'],
-    'se asia': ['brunei', 'cambodia', 'fiji', 'guam', 'indonesia', 'malaysia', 'philippines', 'thailand', 'vietnam', 'singapore'],
+    'se asia': ['brunei', 'cambodia', 'east timor', 'fiji', 'guam', 'indonesia', 'malaysia',
+                'philippines', 'thailand', 'vietnam', 'singapore'],
     'east asia without china': ['hong kong', 'japan', 'macau', 'mongolia', 'taiwan', 'south korea', ],
     'mainland china': ['mainland china', ],
     'aust nz': ['australia', 'french polynesia', 'new zealand', 'papua new guinea',],
@@ -277,8 +279,7 @@ def parse_daily_rep(fp, num_prev, confirmed, dead, recovered):
                         '03-12-2020.csv')) and country == 'mainland china'
                     known_dup = known_dup or (fp.endswith('03-13-2020.csv') and country == 'french guiana')
                     known_dup = known_dup or (fp.endswith('03-14-2020.csv') and country == 'channel islands')
-                    known_dup = known_dup or (country == 'the gambia')
-                    known_dup = known_dup or country == 'the bahamas'
+                    known_dup = known_dup or country in ('the bahamas', 'cabo verde', 'the gambia')
                     if known_dup:
                         if new_datum > count_list[-1]:
                             count_list[-1] = new_datum

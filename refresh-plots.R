@@ -18,6 +18,7 @@ confirmed$asdate = as.Date(confirmed$date, format="%m/%d/%Y")
 x = confirmed$asdate
 lx = length(x)
 xticks = c(x[1], x[lx/4], x[lx/2], x[3*lx/4], x[lx])
+prevweekxticks = xticks[2:length(xticks)] - 7
 ncwin = 3
 lagx = x[(1+ncwin):length(x)]
 llagx = length(lagx)
@@ -53,6 +54,8 @@ for (ry in names(confirmed)) {
       box()
       abline(v=xticks, lty=14, col="grey")
       abline(h=yticks, lty=14, col="grey")
+      # abline(h=yticks/2, lty=15, col="grey")
+      # abline(v=prevweekxticks, lty=15, col="grey")
       dev.off()
       
       # daily new case number by time plot for each country 

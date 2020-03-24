@@ -243,7 +243,7 @@ def accum_by_country_and_region(raw_by_country):
     return accum_regions(by_country)
 
 
-def parse_daily_rep(fp, num_prev, confirmed, dead, recovered):
+def parse_daily_rep(fp, num_prev, confirmed, dead):
     country_ind = 1
     prov_ind = 0
     conf_ind, dead_ind, rec_ind = 3, 4, 5
@@ -264,12 +264,12 @@ def parse_daily_rep(fp, num_prev, confirmed, dead, recovered):
             country_ind = 3
             last_up_ind = 4
             conf_ind, dead_ind, rec_ind = 7, 8, 9
-        ind_dest_list = [(conf_ind, confirmed), (dead_ind, dead), (rec_ind, recovered)]
+        ind_dest_list = [(conf_ind, confirmed), (dead_ind, dead)]
         assert header[country_ind].startswith('Country') and header[country_ind].endswith('Region')
         assert header[last_up_ind].startswith('Last') and header[last_up_ind].endswith('Update')
         assert header[conf_ind] == 'Confirmed'
         assert header[dead_ind] == 'Deaths'
-        assert header[rec_ind] == 'Recovered'
+        # assert header[rec_ind] == 'Recovered'
 
         for row in rit:
             country, prov, ship_ind = _proc_country_str(row[country_ind], row[prov_ind], ship_ind)
@@ -304,7 +304,7 @@ def parse_daily_rep(fp, num_prev, confirmed, dead, recovered):
                         assert len(count_by_prov) == ndl
 
 
-def parse_daily_rep_input(daily_rep_dir, confirmed, dead, recovered):
+def parse_daily_rep_input(daily_rep_dir, confirmed, dead):
     sub = os.listdir(daily_rep_dir)
     dates = []
     num_prev = 0
@@ -316,7 +316,7 @@ def parse_daily_rep_input(daily_rep_dir, confirmed, dead, recovered):
             if fn_str in sub:
                 dates.append('{}/{}/20'.format(month, day))
                 fp = os.path.join(daily_rep_dir, fn_str)
-                parse_daily_rep(fp, num_prev, confirmed, dead, recovered)
+                parse_daily_rep(fp, num_prev, confirmed, dead)
                 # print(fn_str, confirmed)
                 num_prev += 1
     return dates
@@ -368,24 +368,38 @@ def dump_csv(fn, key_order, data_dict, num_data_rows):
             writer.writerow(curr_row)
 
 
+
 def _write_index_conf_row(outp, x, by_country, fmt_list):
     from xml.sax.saxutils import quoteattr
     ax = quoteattr(x)
     if x == 'us-loc':
         x = 'us'
-    c = by_country['confirmed'].get(x, [0])[-1]
+    c_list = by_country['confirmed'].get(x, [0])
+    d_list = by_country['dead'].get(x, [0])
+    c = c_list[-1]
     if c < 5:
         return
-    d = by_country['dead'].get(x, [0])[-1]
-    r = by_country['recovered'].get(x, [0])[-1]
-    # print(ax)
-    trfmt = '<tr id={}><td><div align="right"> {}<br />cases: {:7,}<br />deaths: {:7,}<br />recovered: {:7,}<br />active {:7,}</div></td>'
-    outp.write(trfmt.format(ax, x, c, d, r, c - d - r))
+    d = d_list[-1]
+    trfmt = '<tr id={}><td><div align="right"> {}<br />cases: {:7,}{}<br />deaths: {:7,}{}</div></td>'
+    cgrs = get_daily_growth_est_str(c_list, GROWTH_RATE_WINDOW)
+    dgrs = get_daily_growth_est_str(d_list, GROWTH_RATE_WINDOW)
+    outp.write(trfmt.format(ax, x, c, cgrs, d, dgrs))
     for fmt in fmt_list:
         mog_x = fmt.format(c='-'.join(x.split(' ')))
         outp.write('<td><img src="{}" alt="{}"/></td>'.format(mog_x, x))
     outp.write('</tr>\n')
 
+def get_daily_growth_est_str(c_list, window):
+    grwinpone = window + 1
+    c = c_list[-1]
+    if len(c_list) < grwinpone or c_list[-grwinpone] < 10 or c_list[-grwinpone] >= c:
+        return ''
+    prior_c = float(c_list[-grwinpone])
+    window_mult = c/prior_c
+    per_day_growth = (window_mult ** (1.0 / window) - 1) * 100
+    if per_day_growth > 0.05:
+        return ' (+{:.1f}%)'.format(per_day_growth, window)
+    return ''
 
 def _rec_table_rows(outp, top_group, meta, by_country, fmt):
     group_key = top_group[0]
@@ -407,6 +421,8 @@ def _rec_table_rows(outp, top_group, meta, by_country, fmt):
             _write_index_conf_row(outp, k, by_country, fmt)
 
 
+
+GROWTH_RATE_WINDOW = 7
 # Thanks to https://www.w3schools.com/howto/howto_css_fixed_sidebar.asp  for the sidenav bar css.
 PREFACE = '''<html>
 <head>
@@ -509,9 +525,9 @@ and <a href="https://github.com/CSSEGISandData/COVID-19/issues/382">issue-382</a
     <li>The Johns Hopkins U. data is updated about once a day (usually in the late afternoon/evening in USA). See
     <a href="https://www.worldometers.info/coronavirus/">https://www.worldometers.info/coronavirus/</a> if you are
     looking for data that is updated more frequently.</li>
-    <li>The March 23 spreadsheet for the US showed no recovered cases. This is probably an artifact of moving to finer-grained
-    locality reporting. But it is certainly an error (this also affects the summed counts of recovered cases in North
-    America and the world</li>
+    <li>When "(+#%)" is reported, this is the percent daily growth rate of the count calculated over the last '''
+PREFACE = PREFACE + str(GROWTH_RATE_WINDOW) + ''' days (for locations that had at least 10 counts
+    at the earlier time point in that time range, and are showing appreciable growth in confirmed cases).</li>
  </ul>
 <hr />
 <p>
@@ -523,8 +539,6 @@ def write_index(keys, meta, by_country, fn, fmt):
         outp.write(PREFACE)
         outp.write('<table>\n')
         outp.write('<tr><th>Country/region</th><th><div align="center">cases in black solid<br />'
-                   'active in black dashed<br/>'
-                   '<font color="blue">recovered in blue</font><br />'
                    '<font color="red">deaths in red</font></div>'
                    '</th><th><div align="center">Mean # of new cases/day for the prior 3 days</div></th>'
                    '<th><div align="center"># of new cases/day</div></th></tr>\n')
@@ -536,10 +550,10 @@ def write_index(keys, meta, by_country, fn, fmt):
 
 def main(covid_dir):
     daily_rep_dir = os.path.join(covid_dir, 'csse_covid_19_data', 'csse_covid_19_daily_reports')
-    confirmed, dead, recovered = {}, {}, {}
-    dates = parse_daily_rep_input(daily_rep_dir, confirmed, dead, recovered)
+    confirmed, dead = {}, {}
+    dates = parse_daily_rep_input(daily_rep_dir, confirmed, dead)
     bdt = {}
-    for coll, tag in [(confirmed, 'confirmed'), (dead, 'dead'), (recovered, 'recovered')]:
+    for coll, tag in [(confirmed, 'confirmed'), (dead, 'dead')]:
         by_country, groupings = accum_by_country_and_region(coll)
         out_keys = list(by_country.keys())
         out_keys.sort()

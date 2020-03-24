@@ -26,6 +26,7 @@ aliases = {'iran (islamic republic of)': 'iran',
            'gambia': 'the gambia',
            'gambia, the': 'the gambia',
            'bahamas, the': 'the bahamas',
+           'bahamas': 'the bahamas',
            'cape verde': 'cabo verde',
            }
 
@@ -57,7 +58,7 @@ regions = {
     'middle east': ['bahrain', 'iran', 'iraq', 'israel', 'jordan', 'kuwait', 'lebanon', 'oman',  'palestine', 'qatar',
                     'saudi arabia', 'syria', 'turkey', 'united arab emirates', ],
     'north am': ['canada', 'greenland', 'mexico', 'us', ],
-    'central am': ['antigua and barbuda', 'aruba', 'barbados', 'cayman islands', 'costa rica', 'cuba', 'curacao', 'dominica',
+    'central am': ['antigua and barbuda', 'aruba', 'belize', 'barbados', 'cayman islands', 'costa rica', 'cuba', 'curacao', 'dominica',
                    'dominican republic', 'el salvador', 'grenada', 'guadeloupe', 'guatemala', 'haiti', 'honduras', 'jamaica',
                    'martinique', 'nicaragua', 'panama', 'puerto rico', 'saint barthelemy', 'saint vincent and the grenadines',
                    'saint lucia', 'st. martin',
@@ -122,6 +123,7 @@ state_name_to_abbrev = {
     'wisconsin': 'wi',
     'wyoming': 'wy',
     'guam': 'guam', # not a two-letter, code, I know...
+    'american samoa': 'american samoa',
 }
 _abbrev_to_state_name = {v:k for k, v in state_name_to_abbrev.items()}
 _abbrev_to_state_name['d.c.'] = 'dc'
@@ -190,7 +192,7 @@ def accum_by_country(raw_by_country):
                     if state_name not in state_name_to_abbrev:
                         if state_name == 'us':
                             pass
-                        else:
+                        elif state_name != 'wuhan evacuee':
                             raise NotImplementedError('recognition of state "{}" -> {}'.format(k, v))
                 cv = _by_us_state.get(state_name)
                 if cv:
@@ -245,18 +247,30 @@ def parse_daily_rep(fp, num_prev, confirmed, dead, recovered):
     country_ind = 1
     prov_ind = 0
     conf_ind, dead_ind, rec_ind = 3, 4, 5
-    ind_dest_list = [(conf_ind, confirmed), (dead_ind, dead), (rec_ind, recovered)]
     with open(fp, 'r', encoding='utf-8') as csvfile:
         ship_ind = 0
         rdr = csv.reader(csvfile, delimiter=',')
         rit = iter(rdr)
         header = next(rit)
-        assert header[prov_ind].endswith('Province/State')
-        assert header[country_ind] == 'Country/Region'
-        assert header[2] == 'Last Update'
+        if header[0].endswith('Province/State'):
+            country_ind = 1
+            conf_ind, dead_ind, rec_ind = 3, 4, 5
+            last_up_ind = 2
+            assert header[country_ind] == 'Country/Region'
+        else:
+            prov_ind = 2
+            #FIPS,Admin2,Province_State,Country_Region,Last_Update,Lat,Long_,Confirmed,Deaths,Recovered,Active,Combined_Key
+            assert header[prov_ind] == 'Province_State'
+            country_ind = 3
+            last_up_ind = 4
+            conf_ind, dead_ind, rec_ind = 7, 8, 9
+        ind_dest_list = [(conf_ind, confirmed), (dead_ind, dead), (rec_ind, recovered)]
+        assert header[country_ind].startswith('Country') and header[country_ind].endswith('Region')
+        assert header[last_up_ind].startswith('Last') and header[last_up_ind].endswith('Update')
         assert header[conf_ind] == 'Confirmed'
         assert header[dead_ind] == 'Deaths'
         assert header[rec_ind] == 'Recovered'
+
         for row in rit:
             country, prov, ship_ind = _proc_country_str(row[country_ind], row[prov_ind], ship_ind)
 
@@ -274,23 +288,10 @@ def parse_daily_rep(fp, num_prev, confirmed, dead, recovered):
                 new_datum_str = row[stat_ind]
                 new_datum = int(new_datum_str) if new_datum_str else 0
                 if len(count_list) != num_prev:
-                    if fp.endswith('03-08-2020.csv') and country == 'ireland':
-                        continue
-                    known_dup = (fp.endswith('03-11-2020.csv') or fp.endswith(
-                        '03-12-2020.csv')) and country == 'mainland china'
-                    known_dup = known_dup or (fp.endswith('03-13-2020.csv') and country == 'french guiana')
-                    known_dup = known_dup or (fp.endswith('03-14-2020.csv') and country == 'channel islands')
-                    known_dup = known_dup or country in ('the bahamas', 'cabo verde', 'the gambia')
-                    if known_dup:
-                        if new_datum > count_list[-1]:
-                            count_list[-1] = new_datum
-                        continue
-                    if len(count_list) != num_prev:
-                        print(
-                            '{}: "{}" / "{}" len(count_list)={} num_prev={}'.format(fp, country, prov, len(count_list),
-                                                                                    num_prev))
-                        assert len(count_list) == num_prev
-                count_list.append(new_datum)
+                    assert len(count_list) == 1 + num_prev
+                    count_list[-1] = new_datum + count_list[-1]
+                else:
+                    count_list.append(new_datum)
                 # if country == 'us':
                 #    print('added {} to {} for {} {}'.format(new_datum_str, count_list, country, prov))
         ndl = num_prev + 1

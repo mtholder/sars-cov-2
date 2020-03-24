@@ -509,6 +509,9 @@ and <a href="https://github.com/CSSEGISandData/COVID-19/issues/382">issue-382</a
     <li>The Johns Hopkins U. data is updated about once a day (usually in the late afternoon/evening in USA). See
     <a href="https://www.worldometers.info/coronavirus/">https://www.worldometers.info/coronavirus/</a> if you are
     looking for data that is updated more frequently.</li>
+    <li>The March 23 spreadsheet for the US showed no recovered cases. This is probably an artifact of moving to finer-grained
+    locality reporting. But it is certainly an error (this also affects the summed counts of recovered cases in North
+    America and the world</li>
  </ul>
 <hr />
 <p>

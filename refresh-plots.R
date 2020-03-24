@@ -17,7 +17,13 @@ recovered <- read.csv("recovered.csv", strip.white=TRUE)
 confirmed$asdate = as.Date(confirmed$date, format="%m/%d/%Y")
 x = confirmed$asdate
 lx = length(x)
+singlelagx = x[2:length(x)]
 xticks = c(x[1], x[lx/4], x[lx/2], x[3*lx/4], x[lx])
+
+wx = x[(length(x) %% 7) + 1]
+while (wx[length(wx)] < x[length(x)]) {
+  wx[1 + length(wx)] = wx[length(wx)] + 7
+}
 prevweekxticks = xticks[2:length(xticks)] - 7
 ncwin = 3
 lagx = x[(1+ncwin):length(x)]
@@ -50,18 +56,17 @@ for (ry in names(confirmed)) {
       lines(confirmed$asdate, recy, col="blue")
       lines(confirmed$asdate, y - dy - recy, lty=2)
       axis(side=2, at=yticks, labels=yticks)
-      axis(side=1, at=xticks, labels=xticks)
+      axis(side=1, at=wx, labels=wx)
       box()
-      abline(v=xticks, lty=14, col="grey")
+      abline(v=wx, lty=14, col="grey")
       abline(h=yticks, lty=14, col="grey")
-      # abline(h=yticks/2, lty=15, col="grey")
+      abline(h=yticks/2, lty=15, col="grey")
       # abline(v=prevweekxticks, lty=15, col="grey")
       dev.off()
       
       # daily new case number by time plot for each country 
       pngfn = paste("plots/newcases/newcases-", country, ".png", sep="") 
       png(pngfn)
-      # yticks = c(10E0, 10E1, 10E2, 10E3, 10E4, 10E5)
       nc = calc.new.cases(y)
       tdwnc = c()
       for (i in ncwin:length(nc)) {
@@ -71,8 +76,14 @@ for (ry in names(confirmed)) {
           tdwnc[tind] = tdwnc[tind] + (nc[1 + i - j]/ncwin) ;
         }
       }
-      barplot(tdwnc, ylab=paste("avg. # new cases prev ", ncwin, " days"), xlab="", main=country, names.arg=lagx, las=3)
+      barplot(tdwnc, ylab=paste("avg. # new cases/day prev ", ncwin, " days"), xlab="", main=country, names.arg=lagx, las=3)
       dev.off()
+      
+      pngfn = paste("plots/newcases/newcases-nowindow-", country, ".png", sep="") 
+      png(pngfn)
+      barplot(nc, ylab=paste("# new cases/day"), xlab="", main=country, names.arg=singlelagx, las=3)
+      dev.off()
+      
       if (min(nc) < 0) {
         print(paste("negative new case counts in ", country))
       }

@@ -382,7 +382,7 @@ def _write_index_conf_row(outp, x, by_country, fmt_list):
     trfmt = '<tr id={}><td><div align="right"> {}<br />cases: {:7,}<br />deaths: {:7,}<br />recovered: {:7,}<br />active {:7,}</div></td>'
     outp.write(trfmt.format(ax, x, c, d, r, c - d - r))
     for fmt in fmt_list:
-        mog_x = fmt.format('-'.join(x.split(' ')))
+        mog_x = fmt.format(c='-'.join(x.split(' ')))
         outp.write('<td><img src="{}" alt="{}"/></td>'.format(mog_x, x))
     outp.write('</tr>\n')
 
@@ -526,7 +526,8 @@ def write_index(keys, meta, by_country, fn, fmt):
                    'active in black dashed<br/>'
                    '<font color="blue">recovered in blue</font><br />'
                    '<font color="red">deaths in red</font></div>'
-                   '</th><th><div align="center">Average # of new case for the prior 3 days</div></th></tr>\n')
+                   '</th><th><div align="center">Mean # of new cases/day for the prior 3 days</div></th>'
+                   '<th><div align="center"># of new cases/day</div></th></tr>\n')
         top_group = meta.pop(0)
         _rec_table_rows(outp, top_group, meta, by_country, fmt)
         outp.write('</table>\n')
@@ -547,7 +548,8 @@ def main(covid_dir):
         by_country['date'] = dates
         dump_csv('{}.csv'.format(tag), out_keys, by_country, len(dates))
         bdt[tag] = by_country
-    fmt_list = ['{}/{}'.format(i, i) + '-{}.png' for i in ['confirmed', 'newcases']]
+    fmt_list = ['{}/{}'.format(i, i) + '-{c}.png' for i in ['confirmed', 'newcases']]
+    fmt_list.append('newcases/newcases-nowindow-{c}.png')
     write_index(bef_date, groupings, bdt, 'plots/index.html', fmt_list)
 
 

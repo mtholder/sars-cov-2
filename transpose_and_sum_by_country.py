@@ -229,7 +229,7 @@ def accum_regions(by_country):
     by_country.update(regional)
     us_loc_label = 'us-loc'
     reg_order = ['east asia', 'europe', 'north am', 'middle east', 'se asia',
-                 'central asia', 'africa', 'south am', 'aust nz', 'central am', 'cruise ships', us_loc_label]
+                 'central asia', 'africa', 'south am', 'aust nz', 'central am', us_loc_label]
     meta = [('world', reg_order), ('east asia', east_asia_keys)]
     meta.extend(reg_meta)
     us_loc_list = [i for i in by_country.keys() if i.startswith('us-loc-')]
@@ -470,7 +470,6 @@ PREFACE = '''<html>
   <a href="#south am">South America</a>
   <a href="#aust nz">Australia+NZ+</a>
   <a href="#central am">Central Am.+Carib.</a>
-  <a href="#cruise ships">Cruise Ships</a>
   <a href="#us-loc">Within US</a>
 </div>
 <div class="main">

@@ -243,7 +243,7 @@ def accum_by_country_and_region(raw_by_country):
     return accum_regions(by_country)
 
 
-def parse_daily_rep(fp, num_prev, confirmed, dead):
+def parse_daily_rep(fp, num_prev, confirmed, dead, recovered):
     country_ind = 1
     prov_ind = 0
     conf_ind, dead_ind, rec_ind = 3, 4, 5
@@ -264,12 +264,12 @@ def parse_daily_rep(fp, num_prev, confirmed, dead):
             country_ind = 3
             last_up_ind = 4
             conf_ind, dead_ind, rec_ind = 7, 8, 9
-        ind_dest_list = [(conf_ind, confirmed), (dead_ind, dead)]
+        ind_dest_list = [(conf_ind, confirmed), (dead_ind, dead), (rec_ind, recovered)]
         assert header[country_ind].startswith('Country') and header[country_ind].endswith('Region')
         assert header[last_up_ind].startswith('Last') and header[last_up_ind].endswith('Update')
         assert header[conf_ind] == 'Confirmed'
         assert header[dead_ind] == 'Deaths'
-        # assert header[rec_ind] == 'Recovered'
+        assert header[rec_ind] == 'Recovered'
 
         for row in rit:
             country, prov, ship_ind = _proc_country_str(row[country_ind], row[prov_ind], ship_ind)
@@ -304,7 +304,7 @@ def parse_daily_rep(fp, num_prev, confirmed, dead):
                         assert len(count_by_prov) == ndl
 
 
-def parse_daily_rep_input(daily_rep_dir, confirmed, dead):
+def parse_daily_rep_input(daily_rep_dir, confirmed, dead, recovered):
     sub = os.listdir(daily_rep_dir)
     dates = []
     num_prev = 0
@@ -316,7 +316,7 @@ def parse_daily_rep_input(daily_rep_dir, confirmed, dead):
             if fn_str in sub:
                 dates.append('{}/{}/20'.format(month, day))
                 fp = os.path.join(daily_rep_dir, fn_str)
-                parse_daily_rep(fp, num_prev, confirmed, dead)
+                parse_daily_rep(fp, num_prev, confirmed, dead, recovered)
                 # print(fn_str, confirmed)
                 num_prev += 1
     return dates
@@ -376,14 +376,18 @@ def _write_index_conf_row(outp, x, by_country, fmt_list):
         x = 'us'
     c_list = by_country['confirmed'].get(x, [0])
     d_list = by_country['dead'].get(x, [0])
+    r = by_country['recovered'].get(x, [0])[-1]
     c = c_list[-1]
     if c < 5:
         return
     d = d_list[-1]
-    trfmt = '<tr id={}><td><div align="right"> {}<br />cases: {:7,}{}<br />deaths: {:7,}{}</div></td>'
+    trfmt = '<tr id={}><td><div align="right"> {}<br />cases: {:7,}{}<br />deaths: {:7,}{}'
+    if r > 0:
+        trfmt = trfmt + '<br />recovered: {:7,}<br />active: {:7,}'.format(r, c - d - r)
     cgrs = get_daily_growth_est_str(c_list, GROWTH_RATE_WINDOW)
     dgrs = get_daily_growth_est_str(d_list, GROWTH_RATE_WINDOW)
     outp.write(trfmt.format(ax, x, c, cgrs, d, dgrs))
+    outp.write('</div></td>')
     for fmt in fmt_list:
         mog_x = fmt.format(c='-'.join(x.split(' ')))
         outp.write('<td><img src="{}" alt="{}"/></td>'.format(mog_x, x))
@@ -538,6 +542,8 @@ def write_index(keys, meta, by_country, fn, fmt):
         outp.write(PREFACE)
         outp.write('<table>\n')
         outp.write('<tr><th>Country/region</th><th><div align="center">cases in black solid<br />'
+                   'active in black dashed<br/>'
+                   '<font color="blue">recovered in blue</font><br />'
                    '<font color="red">deaths in red</font></div>'
                    '</th><th><div align="center">Mean # of new cases/day for the prior 3 days</div></th>'
                    '<th><div align="center"># of new cases/day</div></th></tr>\n')
@@ -549,10 +555,10 @@ def write_index(keys, meta, by_country, fn, fmt):
 
 def main(covid_dir):
     daily_rep_dir = os.path.join(covid_dir, 'csse_covid_19_data', 'csse_covid_19_daily_reports')
-    confirmed, dead = {}, {}
-    dates = parse_daily_rep_input(daily_rep_dir, confirmed, dead)
+    confirmed, dead, recovered = {}, {}, {}
+    dates = parse_daily_rep_input(daily_rep_dir, confirmed, dead, recovered)
     bdt = {}
-    for coll, tag in [(confirmed, 'confirmed'), (dead, 'dead')]:
+    for coll, tag in [(confirmed, 'confirmed'), (dead, 'dead'), (recovered, 'recovered')]:
         by_country, groupings = accum_by_country_and_region(coll)
         out_keys = list(by_country.keys())
         out_keys.sort()

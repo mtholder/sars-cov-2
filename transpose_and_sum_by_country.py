@@ -36,7 +36,7 @@ regions = {
                      'nepal', 'pakistan', 'sri lanka', 'russia', 'uzbekistan',],
     'africa': ['algeria', 'angola', 'benin', 'burkina faso', 'cabo verde', 'cameroon', 'chad', 'central african republic', 'congo', 'republic of the congo', 'congo (brazzaville)',
                'djibouti', 'egypt', 'equatorial guinea', 'eritrea', 'eswatini', 'ethiopia',
-               'gabon', 'ghana', 'guinea', 'ivory coast', 'kenya', 'liberia', 'madagascar', 'mauritania', 'mauritius',
+               'gabon', 'ghana', 'guinea', 'ivory coast', 'kenya', 'liberia', 'libya', 'madagascar', 'mauritania', 'mauritius',
                'mayotte', 'morocco', 'mozambique', 'namibia', 'niger', 'nigeria',
                'reunion', 'rwanda', 'senegal', 'seychelles', 'somalia', 'south africa', 'sudan', 'tanzania', 'the gambia',  'togo', 'uganda',
                'tunisia', 'zambia', 'zimbabwe'],
@@ -48,7 +48,7 @@ regions = {
                'monaco', 'montenegro', 'netherlands', 'north ireland', 'north macedonia', 'norway', 'poland', 'portugal',
                'romania', 'san marino', 'serbia', 'slovakia', 'slovenia', 'spain', 'sweden', 'switzerland', 'uk',
                'ukraine', 'vatican city', ],
-    'south am': ['argentina', 'bolivia', 'brazil', 'chile', 'colombia', 'ecuador', 'french guiana',
+    'south am': ['argentina', 'bolivia', 'brazil', 'chile', 'colombia', 'ecuador', 'french guiana', 'laos',
                  'guyana', 'paraguay', 'peru', 'suriname', 'uruguay', 'venezuela'],
     'se asia': ['brunei', 'cambodia', 'east timor', 'fiji', 'guam', 'indonesia', 'malaysia',
                 'philippines', 'thailand', 'vietnam', 'singapore', 'timor-leste'],
@@ -192,7 +192,7 @@ def accum_by_country(raw_by_country):
                     if state_name not in state_name_to_abbrev:
                         if state_name == 'us':
                             pass
-                        elif state_name != 'wuhan evacuee':
+                        elif state_name not in ('wuhan evacuee', 'recovered'):
                             raise NotImplementedError('recognition of state "{}" -> {}'.format(k, v))
                 cv = _by_us_state.get(state_name)
                 if cv:

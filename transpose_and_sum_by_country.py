@@ -34,9 +34,11 @@ regions = {
     'central asia': ['afghanistan', 'armenia', 'azerbaijan', 'bangladesh', 'bhutan', 'georgia',
                      'india', 'kazakhstan', 'kyrgyzstan', 'maldives',
                      'nepal', 'pakistan', 'sri lanka', 'russia', 'uzbekistan',],
-    'africa': ['algeria', 'angola', 'benin', 'burkina faso', 'cabo verde', 'cameroon', 'chad', 'central african republic', 'congo', 'republic of the congo', 'congo (brazzaville)',
+    'africa': ['algeria', 'angola', 'benin', 'burkina faso', 'cabo verde', 'cameroon', 'chad',
+               'central african republic', 'congo', 'republic of the congo', 'congo (brazzaville)',
                'djibouti', 'egypt', 'equatorial guinea', 'eritrea', 'eswatini', 'ethiopia',
-               'gabon', 'ghana', 'guinea', 'ivory coast', 'kenya', 'liberia', 'libya', 'madagascar', 'mauritania', 'mauritius',
+               'gabon', 'ghana', 'guinea', 'guinea-bissau', 'ivory coast', 'kenya', 'liberia', 'libya',
+               'madagascar', 'mali', 'mauritania', 'mauritius',
                'mayotte', 'morocco', 'mozambique', 'namibia', 'niger', 'nigeria',
                'reunion', 'rwanda', 'senegal', 'seychelles', 'somalia', 'south africa', 'sudan', 'tanzania', 'the gambia',  'togo', 'uganda',
                'tunisia', 'zambia', 'zimbabwe'],
@@ -60,10 +62,10 @@ regions = {
     'north am': ['canada', 'greenland', 'mexico', 'us', ],
     'central am': ['antigua and barbuda', 'aruba', 'belize', 'barbados', 'cayman islands', 'costa rica', 'cuba', 'curacao', 'dominica',
                    'dominican republic', 'el salvador', 'grenada', 'guadeloupe', 'guatemala', 'haiti', 'honduras', 'jamaica',
-                   'martinique', 'nicaragua', 'panama', 'puerto rico', 'saint barthelemy', 'saint vincent and the grenadines',
-                   'saint lucia', 'st. martin',
+                   'martinique', 'nicaragua', 'panama', 'puerto rico', 'saint barthelemy',
+                   'saint kitts and nevis', 'saint lucia', 'st. martin', 'saint vincent and the grenadines',
                    'the bahamas', 'trinidad and tobago'],
-    'cruise ships': ['cruise ships']
+    'cruise ships': ['cruise ships', 'diamond princess']
 }
 
 state_name_to_abbrev = {
@@ -511,7 +513,7 @@ the data available. Some notes:</p>
 They reflect a mixture of geographic proximity and pragmatic considerations about what countries seem to be
 affected in similar ways by the disease in early March, 2020
 If you want to look at the python dictionaries I'm using to group countries into, see:
-<a href="https://github.com/mtholder/sars-cov-2/blob/master/transpose_and_sum_by_country.py#L6-L62">transpose_and_sum_by_country.py#L6-L62</a></li>
+<a href="https://github.com/mtholder/sars-cov-2/blob/master/transpose_and_sum_by_country.py#L6-L70">transpose_and_sum_by_country.py#L6-L62</a></li>
     <li>Within each region, countries are listed alphabetically</li>
     <li>Countries with fewer than 5 cases are not plotted</li>
     <li>The data are currently being read from the 'csse_covid_19_data/csse_covid_19_daily_reports' directory of the JHU

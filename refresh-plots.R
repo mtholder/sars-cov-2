@@ -5,6 +5,18 @@ calc.new.cases <- function(y) {
   return(new_cases);
 }
 
+mean.over.window <- function(nc, ncwin) {
+  tdwnc = c()
+  for (i in ncwin:length(nc)) {
+    tind = i + 1 - ncwin;
+    tdwnc[tind] = 0;
+    for (j in 1:ncwin) {
+      tdwnc[tind] = tdwnc[tind] + (nc[1 + i - j]/ncwin) ;
+    }
+  }
+  return(tdwnc);
+}
+
 upper.plot.limit <- function(v) {
   # Returns v rounded up at the second most significant digit (base 10)
   z = v - 10**(floor(log10(v)));
@@ -70,14 +82,7 @@ for (ry in names(confirmed)) {
       pngfn = paste("plots/newcases/newcases-", country, ".png", sep="") 
       png(pngfn)
       nc = calc.new.cases(y)
-      tdwnc = c()
-      for (i in ncwin:length(nc)) {
-        tind = i + 1 - ncwin;
-        tdwnc[tind] = 0;
-        for (j in 1:ncwin) {
-          tdwnc[tind] = tdwnc[tind] + (nc[1 + i - j]/ncwin) ;
-        }
-      }
+      tdwnc <- mean.over.window(nc, ncwin)
       barplot(tdwnc, ylab=paste("avg. # new cases/day prev ", ncwin, " days"), xlab="", main=country, names.arg=lagx, las=3)
       dev.off()
       
@@ -89,6 +94,18 @@ for (ry in names(confirmed)) {
       if (min(nc) < 0) {
         print(paste("negative new case counts in ", country))
       }
+      
+      pngfn = paste("plots/deaths/newdeaths-", country, ".png", sep="") 
+      png(pngfn)
+      dnc = calc.new.cases(dy)
+      dwnc <- mean.over.window(dnc, ncwin)
+      barplot(dwnc, ylab=paste("avg. # new deaths/day prev ", ncwin, " days"), xlab="", main=country, names.arg=lagx, las=3)
+      dev.off()
+
+      pngfn = paste("plots/deaths/newdeaths-nowindow-", country, ".png", sep="") 
+      png(pngfn)
+      barplot(dnc, ylab=paste("# new deaths/day"), xlab="", main=country, names.arg=singlelagx, las=3)
+      dev.off()
       
       # z = dead[ry][[1]];
       # w = recovered[ry][[1]];

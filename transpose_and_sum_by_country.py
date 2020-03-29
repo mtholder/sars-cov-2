@@ -484,7 +484,7 @@ PREFACE = '''<html>
 <p>The nextstrain collaborative effort has a nice FAQ if you want general information
 about the COVID-19 coronavirus:
 <a href="https://nextstrain.org/help/coronavirus/FAQ">https://nextstrain.org/help/coronavirus/FAQ</a>
-</p>
+</p> 
 <p>Researchers at the Johns Hopkins University Center for Systems Science and Engineering have developed
 a nice dashboard for viewing the case counts of covid-19 on a map.
 Not only do they go through the very laborious task of compiling the counts daily, but they are kind enough
@@ -548,7 +548,10 @@ def write_index(keys, meta, by_country, fn, fmt):
                    '<font color="blue">recovered in blue</font><br />'
                    '<font color="red">deaths in red</font></div>'
                    '</th><th><div align="center">Mean # of new cases/day for the prior 3 days</div></th>'
-                   '<th><div align="center"># of new cases/day</div></th></tr>\n')
+                   '</th><th><div align="center">Mean # of new deaths/day for the prior 3 days</div></th>'
+                   '<th><div align="center"># of new cases/day</div></th>' 
+                   '<th><div align="center"># of new deaths/day</div></th>' 
+                   '</tr>\n')
         top_group = meta.pop(0)
         _rec_table_rows(outp, top_group, meta, by_country, fmt)
         outp.write('</table>\n')
@@ -570,7 +573,9 @@ def main(covid_dir):
         dump_csv('{}.csv'.format(tag), out_keys, by_country, len(dates))
         bdt[tag] = by_country
     fmt_list = ['{}/{}'.format(i, i) + '-{c}.png' for i in ['confirmed', 'newcases']]
+    fmt_list.append('deaths/newdeaths-{c}.png')
     fmt_list.append('newcases/newcases-nowindow-{c}.png')
+    fmt_list.append('deaths/newdeaths-nowindow-{c}.png')
     write_index(bef_date, groupings, bdt, 'plots/index.html', fmt_list)
 
 

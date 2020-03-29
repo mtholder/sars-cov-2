@@ -52,7 +52,7 @@ regions = {
                'ukraine', 'vatican city', ],
     'south am': ['argentina', 'bolivia', 'brazil', 'chile', 'colombia', 'ecuador', 'french guiana',
                  'guyana', 'paraguay', 'peru', 'suriname', 'uruguay', 'venezuela'],
-    'se asia': ['brunei', 'cambodia', 'east timor', 'fiji', 'guam', 'indonesia', 'laos', 'malaysia',
+    'se asia': ['brunei', 'burma', 'cambodia', 'east timor', 'fiji', 'guam', 'indonesia', 'laos', 'malaysia',
                 'philippines', 'thailand', 'vietnam', 'singapore', 'timor-leste'],
     'east asia without china': ['hong kong', 'japan', 'macau', 'mongolia', 'taiwan', 'south korea', ],
     'mainland china': ['mainland china', ],
@@ -65,7 +65,7 @@ regions = {
                    'martinique', 'nicaragua', 'panama', 'puerto rico', 'saint barthelemy',
                    'saint kitts and nevis', 'saint lucia', 'st. martin', 'saint vincent and the grenadines',
                    'the bahamas', 'trinidad and tobago'],
-    'cruise ships': ['cruise ships', 'diamond princess']
+    'cruise ships': ['cruise ships', 'diamond princess',  'ms zaandam', ]
 }
 
 state_name_to_abbrev = {

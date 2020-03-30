@@ -28,6 +28,7 @@ aliases = {'iran (islamic republic of)': 'iran',
            'bahamas, the': 'the bahamas',
            'bahamas': 'the bahamas',
            'cape verde': 'cabo verde',
+           'congo (brazzaville)': 'congo-brazzaville',
            }
 
 regions = {
@@ -35,7 +36,7 @@ regions = {
                      'india', 'kazakhstan', 'kyrgyzstan', 'maldives',
                      'nepal', 'pakistan', 'sri lanka', 'russia', 'uzbekistan',],
     'africa': ['algeria', 'angola', 'benin', 'burkina faso', 'cabo verde', 'cameroon', 'chad',
-               'central african republic', 'congo', 'republic of the congo', 'congo (brazzaville)',
+               'central african republic', 'congo', 'republic of the congo', 'congo-brazzaville',
                'djibouti', 'egypt', 'equatorial guinea', 'eritrea', 'eswatini', 'ethiopia',
                'gabon', 'ghana', 'guinea', 'guinea-bissau', 'ivory coast', 'kenya', 'liberia', 'libya',
                'madagascar', 'mali', 'mauritania', 'mauritius',

@@ -85,12 +85,12 @@ for (ry in names(confirmed)) {
       tdwnc <- mean.over.window(nc, ncwin)
       barplot(tdwnc, ylab=paste("avg. # new cases/day prev ", ncwin, " days"), xlab="", main=country, names.arg=lagx, las=3)
       dev.off()
-      
+
       pngfn = paste("plots/newcases/newcases-nowindow-", country, ".png", sep="") 
       png(pngfn)
       barplot(nc, ylab=paste("# new cases/day"), xlab="", main=country, names.arg=singlelagx, las=3)
       dev.off()
-      
+  
       if (min(nc) < 0) {
         print(paste("negative new case counts in ", country))
       }
@@ -106,6 +106,31 @@ for (ry in names(confirmed)) {
       png(pngfn)
       barplot(dnc, ylab=paste("# new deaths/day"), xlab="", main=country, names.arg=singlelagx, las=3)
       dev.off()
+      
+      
+      pngfn = paste("plots/newcases/prop-newcases-", country, ".png", sep="") 
+      png(pngfn)
+      pncx = confirmed$asdate[(ncwin+1):length(confirmed$asdate)]
+      plot(pncx, tdwnc*100 / y[ncwin:(length(y)-1)], type="l",
+           ylab=paste("mean ", ncwin, " day window new cases as %"), xlab="date", main=country, ylim=c(0, 50),
+           axes=TRUE)
+      # lines(pncx, dwnc*100 / dy[ncwin:(length(dy)-1)], col="red")
+      abline(h=c(0,10,20,30,40,50), lty=14, col="grey")
+      abline(h=c(5,15,25,35,45), lty=15, col="grey")
+      dev.off()
+      
+      pngfn = paste("plots/newcases/prop-newcases-nowindow-", country, ".png", sep="")
+      png(pngfn)
+      pncnwx = confirmed$asdate[2:length(confirmed$asdate)];
+      plot(pncnwx, nc*100 / y[1:(length(y)-1)], type="l",
+           ylab=paste("mean ", ncwin, " day window new cases as %"), xlab="date", main=country, ylim=c(0, 50),
+           axes=TRUE)
+      # lines(pncnwx, dnc*100 / dy[ncwin:(length(dy)-1)], col="red")
+      abline(h=c(0,10,20,30,40,50), lty=14, col="grey")
+      abline(h=c(5,15,25,35,45), lty=15, col="grey")
+      dev.off()
+      
+
       
       # z = dead[ry][[1]];
       # w = recovered[ry][[1]];

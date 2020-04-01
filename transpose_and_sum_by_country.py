@@ -35,13 +35,13 @@ regions = {
     'central asia': ['afghanistan', 'armenia', 'azerbaijan', 'bangladesh', 'bhutan', 'georgia',
                      'india', 'kazakhstan', 'kyrgyzstan', 'maldives',
                      'nepal', 'pakistan', 'sri lanka', 'russia', 'uzbekistan',],
-    'africa': ['algeria', 'angola', 'benin', 'botswana', 'burkina faso', 'cabo verde', 'cameroon', 'chad',
+    'africa': ['algeria', 'angola', 'benin', 'botswana', 'burundi', 'burkina faso', 'cabo verde', 'cameroon', 'chad',
                'central african republic', 'congo', 'republic of the congo', 'congo-brazzaville',
                'djibouti', 'egypt', 'equatorial guinea', 'eritrea', 'eswatini', 'ethiopia',
                'gabon', 'ghana', 'guinea', 'guinea-bissau', 'ivory coast', 'kenya', 'liberia', 'libya',
                'madagascar', 'mali', 'mauritania', 'mauritius',
                'mayotte', 'morocco', 'mozambique', 'namibia', 'niger', 'nigeria',
-               'reunion', 'rwanda', 'senegal', 'seychelles', 'somalia', 'south africa', 'sudan', 'tanzania', 'the gambia',  'togo', 'uganda',
+               'reunion', 'rwanda', 'senegal', 'seychelles', 'sierra leone', 'somalia', 'south africa', 'sudan', 'tanzania', 'the gambia',  'togo', 'uganda',
                'tunisia', 'zambia', 'zimbabwe'],
     'europe': ['albania', 'andorra', 'austria', 'belarus', 'belgium', 'bosnia and herzegovina', 'bulgaria',
                'channel islands', 'croatia', 'cyprus', 'czech republic',
@@ -313,7 +313,7 @@ def parse_daily_rep_input(daily_rep_dir, confirmed, dead, recovered):
     num_prev = 0
     for month in range(1, 13):
         m_str = '{:02}'.format(month)
-        for day in range(1, 31):
+        for day in range(1, 32):
             d_str = '{:02}'.format(day)
             fn_str = '{}-{}-2020.csv'.format(m_str, d_str)
             if fn_str in sub:

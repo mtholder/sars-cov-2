@@ -30,7 +30,7 @@ aliases = {'iran (islamic republic of)': 'iran',
            'cape verde': 'cabo verde',
            'congo (brazzaville)': 'congo-brazzaville',
            }
-
+TESTSALOT = 'high per capita tests'
 regions = {
     'central asia': ['afghanistan', 'armenia', 'azerbaijan', 'bangladesh', 'bhutan', 'georgia',
                      'india', 'kazakhstan', 'kyrgyzstan', 'maldives',
@@ -41,14 +41,15 @@ regions = {
                'gabon', 'ghana', 'guinea', 'guinea-bissau', 'ivory coast', 'kenya', 'liberia', 'libya',
                'madagascar', 'malawi', 'mali', 'mauritania', 'mauritius',
                'mayotte', 'morocco', 'mozambique', 'namibia', 'niger', 'nigeria',
-               'reunion', 'rwanda', 'senegal', 'seychelles', 'sierra leone', 'somalia', 'south africa',
+               'reunion', 'rwanda', 'sao tome and principe', 'senegal', 'seychelles',
+               'sierra leone', 'somalia', 'south africa',
                'south sudan', 'sudan', 'tanzania', 'the gambia',  'togo', 'uganda',
                'tunisia', 'western sahara', 'zambia', 'zimbabwe'],
     'europe': ['albania', 'andorra', 'austria', 'belarus', 'belgium', 'bosnia and herzegovina', 'bulgaria',
                'channel islands', 'croatia', 'cyprus', 'czech republic',
                'denmark', 'estonia', 'faroe islands', 'finland', 'france',
                'germany', 'gibraltar', 'greece', 'guernsey', 'hungary',
-               'iceland', 'ireland', 'italy', 'jersey', 'kosovo', 'latvia', 'liechtenstein', 'lithuania', 'luxembourg', 'malta', 'moldova',
+               'iceland', 'ireland', 'italy', 'jersey', 'kosovo', 'latvia', 'lithuania', 'liechtenstein', 'greenland', 'luxembourg', 'malta', 'moldova',
                'monaco', 'montenegro', 'netherlands', 'north ireland', 'north macedonia', 'norway', 'poland', 'portugal',
                'romania', 'russia', 'san marino', 'serbia', 'slovakia', 'slovenia', 'spain', 'sweden', 'switzerland', 'uk',
                'ukraine', 'vatican city', ],
@@ -67,8 +68,18 @@ regions = {
                    'martinique', 'nicaragua', 'panama', 'puerto rico', 'saint barthelemy',
                    'saint kitts and nevis', 'saint lucia', 'st. martin', 'saint vincent and the grenadines',
                    'the bahamas', 'trinidad and tobago'],
-    'cruise ships': ['cruise ships', 'diamond princess',  'ms zaandam', ]
+    'cruise ships': ['cruise ships', 'diamond princess',  'ms zaandam', ],
 }
+
+# >9 test per thousand people based on April 8 https://www.worldometers.info/coronavirus/#countries data
+# with Italy excluded
+TESTSALOT_keys = ['faroe islands', 'iceland', 'united arab emirates', 'gibraltar',
+            'luxembourg', 'bahrain', 'malta', 'liechtenstein', 'andorra', 'norway', 'brunei',
+            'switzerland', 'estonia', 'san marino', 'slovenia', 'qatar', 'israel', 'austria',
+            'greenland', 'hong kong', 'latvia', 'portugal', 'australia',  'cyprus',
+            'singapore', 'greenland', 'germany', 'denmark', 'new zealand', 'south korea',
+            'canada', 'czech republic',
+            ]
 
 state_name_to_abbrev = {
     'alabama': 'al',
@@ -230,11 +241,13 @@ def accum_regions(by_country):
     regional['world'] = sum_lists(list(regional.values()))
     east_asia_keys = ['mainland china', 'east asia without china']
     regional['east asia'] = sum_lists([regional[i] for i in east_asia_keys])
+    regional[TESTSALOT] = sum_lists([by_country[v] for v in TESTSALOT_keys])
     by_country.update(regional)
     us_loc_label = 'us-loc'
-    reg_order = ['east asia', 'europe', 'north am', 'middle east', 'se asia',
+    reg_order = [TESTSALOT, 'east asia', 'europe', 'north am', 'middle east', 'se asia',
                  'central asia', 'africa', 'south am', 'aust nz', 'central am', us_loc_label]
-    meta = [('world', reg_order), ('east asia', east_asia_keys)]
+
+    meta = [('world', reg_order), (TESTSALOT, []), ('east asia', east_asia_keys)]
     meta.extend(reg_meta)
     us_loc_list = [i for i in by_country.keys() if i.startswith('us-loc-')]
     us_loc_list.sort()
@@ -535,6 +548,16 @@ and <a href="https://github.com/CSSEGISandData/COVID-19/issues/382">issue-382</a
     <li>When "(+#%)" is reported, this is the percent daily growth rate of the count calculated over the last '''
 PREFACE = PREFACE + str(GROWTH_RATE_WINDOW) + ''' days (for locations that had at least 10 counts
     at the earlier time point in that time range, and are showing appreciable growth in confirmed cases).</li>
+    <li>The "high per capita tests" graph is for 32 or the 33 countries with >9 tests per thousand people
+    based on <a href="https://www.worldometers.info/coronavirus/#countries">https://www.worldometers.info/coronavirus/#countries</a>.
+    Note that not all of these countries necessarily had high testing rates throughout the duration of their epidemics
+    just when I sorted the data (8 Apr, 2020). Italy was excluded for the list. The summed locations were: 
+    'faroe islands', 'iceland', 'united arab emirates', 'gibraltar',
+            'luxembourg', 'bahrain', 'malta', 'liechtenstein', 'andorra', 'norway', 'brunei',
+            'switzerland', 'estonia', 'san marino', 'slovenia', 'qatar', 'israel', 'austria',
+            'greenland', 'hong kong', 'latvia', 'portugal', 'australia',  'cyprus',
+            'singapore', 'greenland', 'germany', 'denmark', 'new zealand', 'south korea',
+            'canada', and 'czech republic' </li>
  </ul>
 <hr />
 <p>

@@ -61,7 +61,7 @@ regions = {
     'mainland china': ['mainland china', ],
     'aust nz': ['australia', 'french polynesia', 'new zealand', 'papua new guinea',],
     'middle east': ['bahrain', 'iran', 'iraq', 'israel', 'jordan', 'kuwait', 'lebanon', 'oman',  'palestine', 'qatar',
-                    'saudi arabia', 'syria', 'turkey', 'united arab emirates', 'west bank and gaza', ],
+                    'saudi arabia', 'syria', 'turkey', 'united arab emirates', 'west bank and gaza', 'yemen'],
     'north am': ['canada', 'greenland', 'mexico', 'us', ],
     'central am': ['antigua and barbuda', 'aruba', 'belize', 'barbados', 'cayman islands', 'costa rica', 'cuba', 'curacao', 'dominica',
                    'dominican republic', 'el salvador', 'grenada', 'guadeloupe', 'guatemala', 'haiti', 'honduras', 'jamaica',

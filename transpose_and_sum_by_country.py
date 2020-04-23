@@ -139,6 +139,9 @@ state_name_to_abbrev = {
     'wyoming': 'wy',
     'guam': 'guam', # not a two-letter, code, I know...
     'american samoa': 'american samoa',
+    'us military': 'military',
+    'federal bureau of prisons': 'prisons',
+    'veteran hospitals': 'veteran hospitals',
 }
 _abbrev_to_state_name = {v:k for k, v in state_name_to_abbrev.items()}
 _abbrev_to_state_name['d.c.'] = 'dc'

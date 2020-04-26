@@ -526,7 +526,9 @@ the data available. Some notes:</p>
   <ul>
     <li>Variation in the time of day that data is gathered makes the plots of new cases for a day <b>very</b> noisy, even at 
     large geographic scales.
-    So, the new cases plots are the average number of new cases for the 3 days prior to the date shown on the x-axis.</li>
+    So, the new cases plots are the average number of new cases for the 7 days prior to the date shown on the x-axis. 
+    (Prior to 25 Apr, I was looking at a 3 day window, but now that there is a substantial amount of data, coarsening
+    to a 7 day window is nice because it smoooths over the effect of weekends on reporting).</li>
     <li>The regions I used for aggregating the countries are fairly arbitrary.
 They reflect a mixture of geographic proximity and pragmatic considerations about what countries seem to be
 affected in similar ways by the disease in early March, 2020
@@ -575,8 +577,8 @@ def write_index(keys, meta, by_country, fn, fmt):
                    'active in black dashed<br/>'
                    '<font color="blue">recovered in blue</font><br />'
                    '<font color="red">deaths in red</font></div>'
-                   '</th><th><div align="center">Mean # of new cases/day for the prior 3 days</div></th>'
-                   '</th><th><div align="center">Mean # of new deaths/day for the prior 3 days</div></th>'
+                   '</th><th><div align="center">Mean # of new cases/day for the prior 7 days</div></th>'
+                   '</th><th><div align="center">Mean # of new deaths/day for the prior 7 days</div></th>'
                    '<th><div align="center"># of new cases/day</div></th>' 
                    '<th><div align="center"># of new deaths/day</div></th>' 
                    '</tr>\n')

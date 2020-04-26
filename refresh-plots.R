@@ -37,7 +37,7 @@ while (wx[length(wx)] < x[length(x)]) {
   wx[1 + length(wx)] = wx[length(wx)] + 7
 }
 prevweekxticks = xticks[2:length(xticks)] - 7
-ncwin = 3
+ncwin = 7
 lagx = x[(1+ncwin):length(x)]
 llagx = length(lagx)
 lagxticks = c(lagx[1], lagx[llagx/4], lagx[llagx/2], lagx[3*llagx/4], lagx[llagx])

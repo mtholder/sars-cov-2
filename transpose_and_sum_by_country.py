@@ -38,7 +38,7 @@ regions = {
     'africa': ['algeria', 'angola', 'benin', 'botswana', 'burundi', 'burkina faso', 'cabo verde', 'cameroon', 'chad',
                'central african republic', 'comoros', 'congo', 'republic of the congo', 'congo-brazzaville',
                'djibouti', 'egypt', 'equatorial guinea', 'eritrea', 'eswatini', 'ethiopia',
-               'gabon', 'ghana', 'guinea', 'guinea-bissau', 'ivory coast', 'kenya', 'liberia', 'libya',
+               'gabon', 'ghana', 'guinea', 'guinea-bissau', 'ivory coast', 'kenya', 'lesotho', 'liberia', 'libya',
                'madagascar', 'malawi', 'mali', 'mauritania', 'mauritius',
                'mayotte', 'morocco', 'mozambique', 'namibia', 'niger', 'nigeria',
                'reunion', 'rwanda', 'sao tome and principe', 'senegal', 'seychelles',

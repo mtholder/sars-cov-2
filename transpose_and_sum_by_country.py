@@ -577,11 +577,14 @@ def write_index(keys, meta, by_country, fn, fmt):
                    'active in black dashed<br/>'
                    '<font color="blue">recovered in blue</font><br />'
                    '<font color="red">deaths in red</font></div>'
-                   '</th><th><div align="center">Mean # of new cases/day for the prior 7 days</div></th>'
-                   '</th><th><div align="center">Mean # of new deaths/day for the prior 7 days</div></th>'
-                   '<th><div align="center"># of new cases/day</div></th>' 
-                   '<th><div align="center"># of new deaths/day</div></th>' 
+                   '</th>'
+                   '<th><div align="center">Mean # cases (black, left axis) and death (red, right axis)/day for prior week</div></th>'
+
                    '</tr>\n')
+                   #'<th><div align="center">Mean # of new cases/day for the prior 7 days</div></th>'
+                   #'</th><th><div align="center">Mean # of new deaths/day for the prior 7 days</div></th>'
+                   #'<th><div align="center"># of new cases/day</div></th>' 
+                   #'<th><div align="center"># of new deaths/day</div></th>'
         top_group = meta.pop(0)
         _rec_table_rows(outp, top_group, meta, by_country, fmt)
         outp.write('</table>\n')
@@ -602,10 +605,13 @@ def main(covid_dir):
         by_country['date'] = dates
         dump_csv('{}.csv'.format(tag), out_keys, by_country, len(dates))
         bdt[tag] = by_country
-    fmt_list = ['{}/{}'.format(i, i) + '-{c}.png' for i in ['confirmed', 'newcases']]
-    fmt_list.append('deaths/newdeaths-{c}.png')
-    fmt_list.append('newcases/newcases-nowindow-{c}.png')
-    fmt_list.append('deaths/newdeaths-nowindow-{c}.png')
+    fmt_list = ['confirmed/confirmed' + '-{c}.png']
+    fmt_list.append('dual-{c}.png')
+    #
+    # fmt_list.append('newcases/newcases-{c}.png')
+    # fmt_list.append('deaths/newdeaths-{c}.png')
+    # fmt_list.append('newcases/newcases-nowindow-{c}.png')
+    # fmt_list.append('deaths/newdeaths-nowindow-{c}.png')
     write_index(bef_date, groupings, bdt, 'plots/index.html', fmt_list)
 
 

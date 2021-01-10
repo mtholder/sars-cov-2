@@ -89,7 +89,7 @@ for (ry in names(confirmed)) {
       if (dualplot) {
         pngfn = paste("plots/dual-", country, ".png", sep="")
         png(pngfn)
-        plot(lagx, tdwnc, type="l", col="black", ylab="mean cases/day")
+        plot(lagx, tdwnc, type="l", col="black", ylab="mean cases/day", xlab="date")
         abline(h=0)
         par(new=T)
         plot(lagx, dwnc, type="l", col="red", lty=2, col.lab="red", axes=F, xlab=NA, ylab=NA)

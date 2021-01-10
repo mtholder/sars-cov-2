@@ -56,10 +56,12 @@ regions = {
     'south am': ['argentina', 'bolivia', 'brazil', 'chile', 'colombia', 'ecuador', 'french guiana',
                  'guyana', 'paraguay', 'peru', 'suriname', 'uruguay', 'venezuela'],
     'se asia': ['brunei', 'burma', 'cambodia', 'east timor', 'fiji', 'guam', 'indonesia', 'laos', 'malaysia',
-                'philippines', 'thailand', 'vietnam', 'singapore', 'timor-leste'],
+                'philippines', 'thailand', 'samoa', 'singapore', 'solomon islands', 'timor-leste',
+                'vanuatu', 'vietnam', ],
     'east asia without china': ['hong kong', 'japan', 'macau', 'mongolia', 'taiwan', 'south korea', ],
     'mainland china': ['mainland china', ],
-    'aust nz': ['australia', 'french polynesia', 'new zealand', 'papua new guinea',],
+    'aust nz': ['australia', 'french polynesia', 'marshall islands',
+                'new zealand', 'papua new guinea',],
     'middle east': ['bahrain', 'iraq', 'israel', 'jordan', 'kuwait', 'lebanon', 'oman',  'palestine', 'qatar',
                     'saudi arabia', 'syria', 'turkey', 'united arab emirates', 'west bank and gaza', 'yemen'],
     'north am': ['canada', 'greenland', 'mexico', 'us', ],
@@ -244,13 +246,16 @@ def accum_regions(by_country):
     regional['world'] = sum_lists(list(regional.values()))
     east_asia_keys = ['mainland china', 'east asia without china']
     regional['east asia'] = sum_lists([regional[i] for i in east_asia_keys])
-    regional[TESTSALOT] = sum_lists([by_country[v] for v in TESTSALOT_keys])
+    # regional[TESTSALOT] = sum_lists([by_country[v] for v in TESTSALOT_keys])
     by_country.update(regional)
     us_loc_label = 'us-loc'
-    reg_order = [TESTSALOT, 'east asia', 'europe', 'north am', 'middle east', 'se asia',
+    reg_order = [# TESTSALOT,
+                 'east asia', 'europe', 'north am', 'middle east', 'se asia',
                  'central asia', 'africa', 'south am', 'aust nz', 'central am', us_loc_label]
 
-    meta = [('world', reg_order), (TESTSALOT, []), ('east asia', east_asia_keys)]
+    meta = [('world', reg_order),
+            # (TESTSALOT, []), 
+            ('east asia', east_asia_keys)]
     meta.extend(reg_meta)
     us_loc_list = [i for i in by_country.keys() if i.startswith('us-loc-')]
     us_loc_list.sort()
@@ -293,7 +298,8 @@ def parse_daily_rep(fp, num_prev, confirmed, dead, recovered):
 
         for row in rit:
             country, prov, ship_ind = _proc_country_str(row[country_ind], row[prov_ind], ship_ind)
-
+            if not country:
+                continue
             for stat_ind, stat_dest in ind_dest_list:
                 new_country = country not in stat_dest
                 by_prov = stat_dest.setdefault(country, {})
@@ -306,7 +312,10 @@ def parse_daily_rep(fp, num_prev, confirmed, dead, recovered):
                 count_list = by_prov.setdefault(prov, [0] * num_prev)
                 # print(fp, country, prov, stat_ind, num_prev, len(count_list), count_list)
                 new_datum_str = row[stat_ind]
-                new_datum = int(new_datum_str) if new_datum_str else 0
+                try:
+                    new_datum = int(new_datum_str) if new_datum_str else 0
+                except:
+                    new_datum = int(float(new_datum_str))
                 if len(count_list) != num_prev:
                     assert len(count_list) == 1 + num_prev
                     count_list[-1] = new_datum + count_list[-1]
@@ -328,17 +337,18 @@ def parse_daily_rep_input(daily_rep_dir, confirmed, dead, recovered):
     sub = os.listdir(daily_rep_dir)
     dates = []
     num_prev = 0
-    for month in range(1, 13):
-        m_str = '{:02}'.format(month)
-        for day in range(1, 32):
-            d_str = '{:02}'.format(day)
-            fn_str = '{}-{}-2020.csv'.format(m_str, d_str)
-            if fn_str in sub:
-                dates.append('{}/{}/20'.format(month, day))
-                fp = os.path.join(daily_rep_dir, fn_str)
-                parse_daily_rep(fp, num_prev, confirmed, dead, recovered)
-                # print(fn_str, confirmed)
-                num_prev += 1
+    for year in range(20, 25):
+        for month in range(1, 13):
+            m_str = '{:02}'.format(month)
+            for day in range(1, 32):
+                d_str = '{:02}'.format(day)
+                fn_str = '{}-{}-20{}.csv'.format(m_str, d_str, year)
+                if fn_str in sub:
+                    dates.append('{}/{}/{}'.format(month, day, year))
+                    fp = os.path.join(daily_rep_dir, fn_str)
+                    parse_daily_rep(fp, num_prev, confirmed, dead, recovered)
+                    # print(fn_str, confirmed)
+                    num_prev += 1
     return dates
 
 
@@ -553,16 +563,6 @@ and <a href="https://github.com/CSSEGISandData/COVID-19/issues/382">issue-382</a
     <li>When "(+#%)" is reported, this is the percent daily growth rate of the count calculated over the last '''
 PREFACE = PREFACE + str(GROWTH_RATE_WINDOW) + ''' days (for locations that had at least 10 counts
     at the earlier time point in that time range, and are showing appreciable growth in confirmed cases).</li>
-    <li>The "high per capita tests" graph is for 32 or the 33 countries with >9 tests per thousand people
-    based on <a href="https://www.worldometers.info/coronavirus/#countries">https://www.worldometers.info/coronavirus/#countries</a>.
-    Note that not all of these countries necessarily had high testing rates throughout the duration of their epidemics
-    just when I sorted the data (8 Apr, 2020). Italy was excluded for the list. The summed locations were: 
-    'faroe islands', 'iceland', 'united arab emirates', 'gibraltar',
-            'luxembourg', 'bahrain', 'malta', 'liechtenstein', 'andorra', 'norway', 'brunei',
-            'switzerland', 'estonia', 'san marino', 'slovenia', 'qatar', 'israel', 'austria',
-            'greenland', 'hong kong', 'latvia', 'portugal', 'australia',  'cyprus',
-            'singapore', 'greenland', 'germany', 'denmark', 'new zealand', 'south korea',
-            'canada', and 'czech republic' </li>
  </ul>
 <hr />
 <p>
@@ -572,15 +572,16 @@ PREFACE = PREFACE + str(GROWTH_RATE_WINDOW) + ''' days (for locations that had a
 def write_index(keys, meta, by_country, fn, fmt):
     with open(fn, 'w', encoding='utf-8') as outp:
         outp.write(PREFACE)
-        outp.write('<table>\n')
+        outp.write('<table border=".5">\n')
         outp.write('<tr><th>Country/region</th><th><div align="center">cases in black solid<br />'
                    'active in black dashed<br/>'
                    '<font color="blue">recovered in blue</font><br />'
                    '<font color="red">deaths in red</font></div>'
                    '</th>'
                    '<th><div align="center">Mean # cases (black, left axis) and death (red, right axis)/day for prior week</div></th>'
-
                    '</tr>\n')
+                   # '<th><div align="center">Log10 of (# estimated cases/ # confirmed cases) in the last 7 days</div></th>'
+                   
                    #'<th><div align="center">Mean # of new cases/day for the prior 7 days</div></th>'
                    #'</th><th><div align="center">Mean # of new deaths/day for the prior 7 days</div></th>'
                    #'<th><div align="center"># of new cases/day</div></th>' 
@@ -607,6 +608,7 @@ def main(covid_dir):
         bdt[tag] = by_country
     fmt_list = ['confirmed/confirmed' + '-{c}.png']
     fmt_list.append('dual-{c}.png')
+    #fmt_list.append('{c}.png')
     #
     # fmt_list.append('newcases/newcases-{c}.png')
     # fmt_list.append('deaths/newdeaths-{c}.png')
